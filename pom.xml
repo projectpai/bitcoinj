@@ -4,7 +4,7 @@
 
   <groupId>org.bitcoinj</groupId>
   <artifactId>paicoinj-parent</artifactId>
-  <version>0.14.6-SNAPSHOT</version>
+  <version>0.14.6</version>
   <packaging>pom</packaging>
 
   <modules>
@@ -53,12 +53,12 @@
 
   <distributionManagement>
     <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <id>central</id>
+      <url>http://nexus.int.oben.me/repository/maven-snapshots/</url>
     </snapshotRepository>
     <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      <id>central</id>
+      <url>http://nexus.int.oben.me/repository/maven-releases/</url>
     </repository>
   </distributionManagement>
 
@@ -89,18 +89,6 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <notimestamp>true</notimestamp>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.5</version>
-        <extensions>true</extensions>
-        <configuration>
-            <serverId>ossrh</serverId>
-            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-            <autoReleaseAfterClose>false</autoReleaseAfterClose>
         </configuration>
       </plugin>
     </plugins>
