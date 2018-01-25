@@ -25,7 +25,7 @@ import static com.google.common.base.Preconditions.checkState;
 /**
  * Network parameters for the regression test mode of bitcoind in which all blocks are trivially solvable.
  */
-public class RegTestParams extends TestNet2Params {
+public class RegTestParams extends TestNet3Params {
     private static final BigInteger MAX_TARGET = new BigInteger("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16);
 
     public RegTestParams() {
@@ -34,8 +34,10 @@ public class RegTestParams extends TestNet2Params {
         // By setting the block interval for difficulty adjustments to Integer.MAX_VALUE we make sure difficulty never changes.    
         interval = Integer.MAX_VALUE;
         maxTarget = MAX_TARGET;
+        packetMagic = 0xffd1d6f3;
+        maxTarget = Utils.decodeCompactBits(0x207fffffL);
         subsidyDecreaseBlockCount = 150;
-        port = 18444;
+        port = 19567;
         id = ID_REGTEST;
 
         majorityEnforceBlockUpgrade = MainNetParams.MAINNET_MAJORITY_ENFORCE_BLOCK_UPGRADE;
@@ -55,10 +57,10 @@ public class RegTestParams extends TestNet2Params {
         synchronized (RegTestParams.class) {
             if (genesis == null) {
                 genesis = super.getGenesisBlock();
-                genesis.setNonce(2);
+                genesis.setNonce(1);
                 genesis.setDifficultyTarget(0x207fFFFFL);
-                genesis.setTime(1296688602L);
-                checkState(genesis.getHashAsString().toLowerCase().equals("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"));
+                genesis.setTime(1509798928L);
+                checkState(genesis.getHashAsString().toLowerCase().equals("190a4f6022b980ee9719200b024c1b9df515baea3afbccf1adc93c70aa93941f"));
             }
             return genesis;
         }
