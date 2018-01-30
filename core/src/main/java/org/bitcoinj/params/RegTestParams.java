@@ -16,9 +16,9 @@
 
 package org.bitcoinj.params;
 
-import org.bitcoinj.core.Block;
-
 import java.math.BigInteger;
+import org.bitcoinj.core.Block;
+import org.bitcoinj.core.Utils;
 
 import static com.google.common.base.Preconditions.checkState;
 

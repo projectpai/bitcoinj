@@ -145,7 +145,7 @@ public abstract class NetworkParameters {
      * mined upon and thus will be quickly re-orged out as long as the majority are enforcing the rule.
      */
     //public static final int BIP16_ENFORCE_TIME = 1333238400;
-    public static final int BIP16_ENFORCE_TIME = 9999999999;
+    public static final long BIP16_ENFORCE_TIME = 9999999999L;
     
     /**
      * The maximum number of coins to be generated

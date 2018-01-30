@@ -17,12 +17,10 @@
 
 package org.bitcoinj.params;
 
-import org.bitcoinj.core.*;
-import org.bitcoinj.net.discovery.*;
+import org.bitcoinj.core.Sha256Hash;
+import org.bitcoinj.core.Utils;
 
-import java.net.*;
-
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  * Parameters for the main production network on which people trade goods and services.
@@ -52,7 +50,7 @@ public class MainNetParams extends AbstractBitcoinNetParams {
 
         genesisBlock.setDifficultyTarget(0x1d00ffffL);
         genesisBlock.setTime(1504706400L);
-        genesisBlock.setNonce(2876968165);
+        genesisBlock.setNonce(2876968165L);
         id = ID_MAINNET;
         subsidyDecreaseBlockCount = 210000;
         spendableCoinbaseDepth = 100;

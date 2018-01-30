@@ -17,7 +17,13 @@
 
 package org.bitcoinj.core;
 
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.bitcoinj.params.MainNetParams;
+import org.bitcoinj.params.RegTestParams;
 import org.bitcoinj.params.UnitTestParams;
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.MemoryBlockStore;
@@ -25,22 +31,22 @@ import org.bitcoinj.testing.FakeTxBuilder;
 import org.bitcoinj.utils.BriefLogFormatter;
 import org.bitcoinj.wallet.Wallet;
 import org.bitcoinj.wallet.Wallet.BalanceType;
-
-import com.google.common.util.concurrent.ListenableFuture;
-import org.junit.rules.ExpectedException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
-import java.math.BigInteger;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
-import static org.bitcoinj.core.Coin.*;
+import static org.bitcoinj.core.Coin.COIN;
+import static org.bitcoinj.core.Coin.FIFTY_COINS;
+import static org.bitcoinj.core.Coin.ZERO;
+import static org.bitcoinj.core.Coin.valueOf;
 import static org.bitcoinj.testing.FakeTxBuilder.createFakeBlock;
 import static org.bitcoinj.testing.FakeTxBuilder.createFakeTx;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 // Handling of chain splits/reorgs are in ChainSplitTests.
 
@@ -57,6 +63,7 @@ public class BlockChainTest {
     private static final NetworkParameters PARAMS = UnitTestParams.get();
     private final StoredBlock[] block = new StoredBlock[1];
     private Transaction coinbaseTransaction;
+    private static NetworkParameters testNet = new RegTestParams();
 
     private void resetBlockStore() {
         blockStore = new MemoryBlockStore(PARAMS);
@@ -196,7 +203,8 @@ public class BlockChainTest {
 
         // Accept any level of difficulty now.
         BigInteger oldVal = testNet.getMaxTarget();
-        testNet.setMaxTarget(new BigInteger("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16));
+        testNet.maxTarget = new BigInteger
+            ("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16);
         try {
             testNetChain.add(bad);
             // We should not get here as the difficulty target should not be changing at this point.
@@ -204,7 +212,7 @@ public class BlockChainTest {
         } catch (VerificationException e) {
             assertTrue(e.getMessage(), e.getCause().getMessage().contains("Unexpected change in difficulty"));
         }
-        testNet.setMaxTarget(oldVal);
+        testNet.maxTarget = oldVal;
 
         // TODO: Test difficulty change is not out of range when a transition period becomes valid.
     }
