@@ -119,8 +119,7 @@ public abstract class NetworkParameters {
             // A script containing the difficulty bits and the following message:
             //
             //   "09/06/2017 - Create your own avatar twin that talks like you"
-            byte[] bytes = Utils.HEX.decode
-                   ("04ffff001d01044530392f30362f32303137202d2043726561746520796f7572206f776e20617661746172207477696e20746861742074616c6b73206c696b6520796f75");
+            byte[] bytes = Utils.HEX.decode("04ffff001d01043c30392f30362f32303137202d2043726561746520796f7572206f776e20617661746172207477696e20746861742074616c6b73206c696b6520796f75");
             t.addInput(new TransactionInput(n, t, bytes));
             ByteArrayOutputStream scriptPubKeyBytes = new ByteArrayOutputStream();
             Script.writeBytes(scriptPubKeyBytes, Utils.HEX.decode
