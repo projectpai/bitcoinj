@@ -29,14 +29,12 @@ import org.bitcoinj.params.Networks;
 import org.bitcoinj.params.TestNet3Params;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
-import org.bitcoinj.utils.GeneratorUtil;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import static java.util.Arrays.asList;
-import static org.bitcoinj.core.Utils.HEX;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
@@ -87,7 +85,7 @@ public class AddressTest {
     @Test
     public void decoding() throws Exception {
         Address a = GeneratorUtil.byAddressHeader(params);
-        byte[] hash160 = GeneratorUtil.lastHash();
+        byte[] hash160 = GeneratorUtil.lastHash160();
         String base58 = a.toBase58();
 
         Address a1 = Address.fromBase58(params, base58);
@@ -169,27 +167,22 @@ public class AddressTest {
     @Test
     public void p2shAddress() throws Exception {
         // Test that we can construct P2SH addresses
-        Address mainNetP2SHAddress = Address.fromBase58(MainNetParams.get(), "35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1tU");
-        assertEquals(mainNetP2SHAddress.version, MainNetParams.get().p2shHeader);
-        assertTrue(mainNetP2SHAddress.isP2SHAddress());
-        Address testNetP2SHAddress = Address.fromBase58(TestNet3Params.get(), "2MuVSxtfivPKJe93EC1Tb9UhJtGhsoWEHCe");
-        assertEquals(testNetP2SHAddress.version, TestNet3Params.get().p2shHeader);
-        assertTrue(testNetP2SHAddress.isP2SHAddress());
+        Address address = GeneratorUtil.byP2SHHeader(params);
+        byte[] addressHash = GeneratorUtil.lastHash160();
+        assertEquals(address.version, params.p2shHeader);
+        assertTrue(address.isP2SHAddress());
 
         // Test that we can determine what network a P2SH address belongs to
-        NetworkParameters mainNetParams = Address.getParametersFromAddress("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1tU");
-        assertEquals(MainNetParams.get().getId(), mainNetParams.getId());
-        NetworkParameters testNetParams = Address.getParametersFromAddress("2MuVSxtfivPKJe93EC1Tb9UhJtGhsoWEHCe");
-        assertEquals(TestNet3Params.get().getId(), testNetParams.getId());
+        NetworkParameters addressParams = Address.getParametersFromAddress(address
+            .toBase58());
+        assertEquals(addressParams.getId(), params.getId());
 
         // Test that we can convert them from hashes
-        byte[] hex = HEX.decode("2ac4b0b501117cc8119c5797b519538d4942e90e");
-        Address a = Address.fromP2SHHash(mainParams, hex);
-        assertEquals("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1tU", a.toString());
-        Address b = Address.fromP2SHHash(testParams, HEX.decode("18a0e827269b5211eb51a4af1b2fa69333efa722"));
-        assertEquals("2MuVSxtfivPKJe93EC1Tb9UhJtGhsoWEHCe", b.toString());
-        Address c = Address.fromP2SHScript(mainParams, ScriptBuilder.createP2SHOutputScript(hex));
-        assertEquals("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1tU", c.toString());
+        Address fromP2SHHash = Address.fromP2SHHash(params, addressHash);
+        assertEquals(address.toString(), fromP2SHHash.toString());
+        Address fromP2SHScript = Address.fromP2SHScript(params, ScriptBuilder.createP2SHOutputScript
+            (addressHash));
+        assertEquals(address.toString(), fromP2SHScript.toString());
     }
 
     @Test
