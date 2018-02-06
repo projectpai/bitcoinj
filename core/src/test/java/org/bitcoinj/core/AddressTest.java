@@ -60,7 +60,7 @@ public class AddressTest {
 
     @Test
     public void testJavaSerialization() throws Exception {
-        Address testAddress = GeneratorUtil.byAddressHeader(params);
+        Address testAddress = GeneratorUtil.addressByHeader(params);
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             try (ObjectOutputStream oos = new ObjectOutputStream(os)) {
                 oos.writeObject(testAddress);
@@ -77,15 +77,15 @@ public class AddressTest {
 
     @Test
     public void stringification() {
-        Address address = GeneratorUtil.byAddressHeader(params);
+        Address address = GeneratorUtil.addressByHeader(params);
         assertEquals(address.toBase58(), address.toString());
         assertFalse(address.isP2SHAddress());
     }
     
     @Test
     public void decoding() throws Exception {
-        Address a = GeneratorUtil.byAddressHeader(params);
-        byte[] hash160 = GeneratorUtil.lastHash160();
+        Address a = GeneratorUtil.addressByHeader(params);
+        byte[] hash160 = GeneratorUtil.lastHash();
         String base58 = a.toBase58();
 
         Address a1 = Address.fromBase58(params, base58);
@@ -116,7 +116,7 @@ public class AddressTest {
 
         // Check the case of a mismatched network.
         try {
-            Address a1 = GeneratorUtil.byAddressHeader(mainParams);
+            Address a1 = GeneratorUtil.addressByHeader(mainParams);
             Address.fromBase58(testParams, a1.toBase58());
             fail();
         } catch (WrongNetworkException e) {
@@ -130,7 +130,7 @@ public class AddressTest {
 
     @Test
     public void getNetwork() throws Exception {
-        Address address = GeneratorUtil.byAddressHeader(params);
+        Address address = GeneratorUtil.addressByHeader(params);
         NetworkParameters parameters = Address.getParametersFromAddress(address.toBase58());
         assertEquals(params.getId(), parameters.getId());
     }
@@ -151,10 +151,10 @@ public class AddressTest {
         // Add new network params
         Networks.register(altNetwork);
         // Check if can parse address
-        Address alt = GeneratorUtil.byAddressHeader(altNetwork);
+        Address alt = GeneratorUtil.addressByHeader(altNetwork);
         Assert.assertEquals(altNetwork.getId(), alt.getParameters().getId());
         // Check if main network works as before
-        Address current = GeneratorUtil.byAddressHeader(params);
+        Address current = GeneratorUtil.addressByHeader(params);
         assertEquals(params.getId(), current.getParameters().getId());
         // Unregister network
         Networks.unregister(altNetwork);
@@ -167,8 +167,8 @@ public class AddressTest {
     @Test
     public void p2shAddress() throws Exception {
         // Test that we can construct P2SH addresses
-        Address address = GeneratorUtil.byP2SHHeader(params);
-        byte[] addressHash = GeneratorUtil.lastHash160();
+        Address address = GeneratorUtil.addressByP2SHHeader(params);
+        byte[] addressHash = GeneratorUtil.lastHash();
         assertEquals(address.version, params.p2shHeader);
         assertTrue(address.isP2SHAddress());
 
@@ -206,7 +206,7 @@ public class AddressTest {
 
     @Test
     public void cloning() throws Exception {
-        Address a = GeneratorUtil.byAddressHeader(params);
+        Address a = GeneratorUtil.addressByHeader(params);
         Address b = a.clone();
 
         assertEquals(a, b);
@@ -215,14 +215,14 @@ public class AddressTest {
 
     @Test
     public void roundtripBase58() throws Exception {
-        Address address = GeneratorUtil.byAddressHeader(params);
+        Address address = GeneratorUtil.addressByHeader(params);
         String base58 = address.toBase58();
         assertEquals(base58, Address.fromBase58(null, base58).toBase58());
     }
 
     @Test
     public void comparisonEqualTo() throws Exception {
-        Address a = GeneratorUtil.byAddressHeader(params);
+        Address a = GeneratorUtil.addressByHeader(params);
         Address b = a.clone();
 
         int result = a.compareTo(b);
@@ -231,8 +231,8 @@ public class AddressTest {
 
     @Test
     public void base58Compare() throws Exception {
-        Address address1 = GeneratorUtil.byAddressHeader(params);
-        Address address2 = GeneratorUtil.byAddressHeader(params);
+        Address address1 = GeneratorUtil.addressByHeader(params);
+        Address address2 = GeneratorUtil.addressByHeader(params);
 
         int compare = address1.compareTo(address2);
         int base58Compare = address1.toBase58().compareTo(address2.toBase58());
@@ -242,8 +242,8 @@ public class AddressTest {
 
     @Test
     public void stringCompare() throws Exception {
-        Address address1 = GeneratorUtil.byAddressHeader(params);
-        Address address2 = GeneratorUtil.byAddressHeader(params);
+        Address address1 = GeneratorUtil.addressByHeader(params);
+        Address address2 = GeneratorUtil.addressByHeader(params);
 
         int compare = address1.compareTo(address2);
         int stringCompare = address1.toString().compareTo(address2.toString());
