@@ -18,7 +18,7 @@ package org.bitcoinj.uri;
 
 import com.google.common.collect.ImmutableList;
 import org.bitcoinj.core.Address;
-import org.bitcoinj.core.GeneratorUtil;
+import org.bitcoinj.core.DataCorrector;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.params.TestNet3Params;
@@ -35,7 +35,8 @@ import static org.junit.Assert.fail;
 public class BitcoinURITest {
 
     private static final NetworkParameters MAINNET = MainNetParams.get();
-    private static final String MAINNET_GOOD_ADDRESS = GeneratorUtil.addressByHeader(MAINNET).toString();
+    private static final String MAINNET_GOOD_ADDRESS = DataCorrector.correctAddress(MAINNET,
+        "1KzTSfqjF2iKCduwz59nv2uqh1W2JsTxZH").toString();
     private static final String BITCOIN_SCHEME = MAINNET.getUriScheme();
 
     @Test

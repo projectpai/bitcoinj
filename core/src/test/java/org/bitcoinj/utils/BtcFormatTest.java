@@ -1171,7 +1171,7 @@ public class BtcFormatTest {
 
         BtcFormat megaFormat = BtcFormat.getInstance(-6, US);
         assertEquals("2,100.00", megaFormat.format(MAX_MONEY));
-        assertEquals("21", megaFormat.format(MAX_MONEY, 0));
+        assertEquals("2,100", megaFormat.format(MAX_MONEY, 0));
         assertEquals("11.22334455667788", megaFormat.format(value, 0, REPEATING_DOUBLETS));
         assertEquals("11.223344556677", megaFormat.format(Coin.valueOf(1122334455667700l), 0, REPEATING_DOUBLETS));
         assertEquals("11.22334455667788", megaFormat.format(value, 0, REPEATING_TRIPLETS));

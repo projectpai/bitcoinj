@@ -197,8 +197,10 @@ public class ECKeyTest {
     @Test
     public void base58Encoding_leadingZero() throws Exception {
         String privkey = "91axuYLa8xK796DnBXXsMbjuc8pDYxYgJyQMvFzrZ6UfXaGYuqL";
-        ECKey key = DumpedPrivateKey.fromBase58(TestNet3Params.get(), privkey).getKey();
-        assertEquals(privkey, key.getPrivateKeyEncoded(TestNet3Params.get()).toString());
+        DumpedPrivateKey corrected = DataCorrector.correctDumpedPrivateKey(TestNet3Params.get(),
+            privkey, false);
+        ECKey key = corrected.getKey();
+        assertEquals(corrected.toString(), key.getPrivateKeyEncoded(TestNet3Params.get()).toString());
         assertEquals(0, key.getPrivKeyBytes()[0]);
     }
 

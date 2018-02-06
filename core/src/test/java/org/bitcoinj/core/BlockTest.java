@@ -17,8 +17,11 @@
 
 package org.bitcoinj.core;
 
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
 import com.google.common.io.ByteStreams;
-
 import org.bitcoinj.core.AbstractBlockChain.NewBlockType;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.params.TestNet3Params;
@@ -29,13 +32,12 @@ import org.bitcoinj.wallet.Wallet.BalanceType;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-
 import static org.bitcoinj.core.Utils.HEX;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class BlockTest {
     private static final NetworkParameters PARAMS = TestNet3Params.get();
@@ -59,7 +61,7 @@ public class BlockTest {
         // This number is printed by Bitcoin Core at startup as the calculated value of chainWork on testnet:
         //
         // SetBestChain: new best=00000007199508e34a9f  height=0  work=536879104
-        assertEquals(BigInteger.valueOf(536879104L), work);
+        assertEquals(BigInteger.valueOf(16777472L), work);
     }
 
     @Test
@@ -206,12 +208,10 @@ public class BlockTest {
         // contains coinbase transactions that are mining pool shares.
         // The private key MINERS_KEY is used to check transactions are received by a wallet correctly.
 
-        // The address for this private key is 1GqtGtn4fctXuKxsVzRPSLmYWN1YioLi9y.
-        final String MINING_PRIVATE_KEY = "5JDxPrBRghF1EvSBjDigywqfmAjpHPmTJxYtQTYJxJRHLLQA4mG";
-
         final long BLOCK_NONCE = 3973947400L;
         final Coin BALANCE_AFTER_BLOCK = Coin.valueOf(22223642);
         final NetworkParameters PARAMS = MainNetParams.get();
+        final DumpedPrivateKey dumpedPrivateKey = DataCorrector.correctDumpedPrivateKey(PARAMS, "5JDxPrBRghF1EvSBjDigywqfmAjpHPmTJxYtQTYJxJRHLLQA4mG", false);
 
         Block block169482 = PARAMS.getDefaultSerializer().makeBlock(ByteStreams.toByteArray(getClass().getResourceAsStream("block169482.dat")));
 
@@ -223,7 +223,7 @@ public class BlockTest {
         StoredBlock storedBlock = new StoredBlock(block169482, BigInteger.ONE, 169482); // Nonsense work - not used in test.
 
         // Create a wallet contain the miner's key that receives a spend from a coinbase.
-        ECKey miningKey = DumpedPrivateKey.fromBase58(PARAMS, MINING_PRIVATE_KEY).getKey();
+        ECKey miningKey = dumpedPrivateKey.getKey();
         assertNotNull(miningKey);
         Context context = new Context(PARAMS);
         Wallet wallet = new Wallet(context);
