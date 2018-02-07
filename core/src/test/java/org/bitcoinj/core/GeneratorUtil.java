@@ -42,19 +42,6 @@ return null;
     return currentHash.get();
   }
 
-  public static String deterministicKeySerialized(NetworkParameters params) {
-    byte[] bytes = hash(78);
-    int head = params.getBip32HeaderPub();
-    ByteBuffer bb = ByteBuffer.allocate(bytes.length);
-    bb.putInt(head);
-    bb.put(bytes);
-
-    byte[] newBytes = bb.array();
-    byte[] data = Arrays.copyOfRange(newBytes, 3, newBytes.length);
-    data[data.length - 33] = 2;
-    return Base58.encode(withChecksum4B(data));
-  }
-
   public static String privateKeyBase58(NetworkParameters params) {
     int version = params.getDumpedPrivateKeyHeader();
     Assert.assertTrue(version >= 0 && version < 256);
