@@ -26,6 +26,10 @@ public class GeneratorUtil {
     return new Address(params, params.getP2SHHeader(), hash160());
   }
 
+  public static Block block(NetworkParameters params) {
+return null;
+  }
+
   public static byte[] lastHash() {
     return currentHash.get();
   }

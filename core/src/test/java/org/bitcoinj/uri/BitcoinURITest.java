@@ -382,7 +382,7 @@ public class BitcoinURITest {
     @Test(expected = BitcoinURIParseException.class)
     public void testBad_TooLargeAmount() throws BitcoinURIParseException {
         new BitcoinURI(MAINNET, BITCOIN_SCHEME + ":" + MAINNET_GOOD_ADDRESS
-                + "?amount=100000000");
+                + "?amount=" + (MAINNET.MAX_COINS + 1));
     }
 
     @Test
