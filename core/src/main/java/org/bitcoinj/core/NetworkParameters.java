@@ -122,7 +122,7 @@ public abstract class NetworkParameters {
             byte[] bytes = Utils.HEX.decode("04ffff001d01043c30392f30362f32303137202d2043726561746520796f7572206f776e20617661746172207477696e20746861742074616c6b73206c696b6520796f75");
             t.addInput(new TransactionInput(n, t, bytes));
             ByteArrayOutputStream scriptPubKeyBytes = new ByteArrayOutputStream();
-            criptPubKeyBytes.write(ScriptOpCodes.OP_HASH160);
+            scriptPubKeyBytes.write(ScriptOpCodes.OP_HASH160);
             Script.writeBytes(scriptPubKeyBytes, Utils.HEX.decode
                     ("9a8abac6c3d97d37d627e6ebcaf68be72275168b"));
             scriptPubKeyBytes.write(ScriptOpCodes.OP_EQUAL);

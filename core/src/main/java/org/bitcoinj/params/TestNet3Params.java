@@ -50,7 +50,7 @@ public class TestNet3Params extends AbstractBitcoinNetParams {
         dumpedPrivateKeyHeader = 226;
         genesisBlock.setTime(1504706516L);
         genesisBlock.setDifficultyTarget(0x1c09fe61L);
-        genesisBlock.setNonce(2253953817);
+        genesisBlock.setNonce(2253953817L);
         spendableCoinbaseDepth = 100;
         subsidyDecreaseBlockCount = 210000;
         String genesisHash = genesisBlock.getHashAsString();
