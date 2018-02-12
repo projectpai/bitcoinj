@@ -122,9 +122,10 @@ public abstract class NetworkParameters {
             byte[] bytes = Utils.HEX.decode("04ffff001d01043c30392f30362f32303137202d2043726561746520796f7572206f776e20617661746172207477696e20746861742074616c6b73206c696b6520796f75");
             t.addInput(new TransactionInput(n, t, bytes));
             ByteArrayOutputStream scriptPubKeyBytes = new ByteArrayOutputStream();
+            criptPubKeyBytes.write(ScriptOpCodes.OP_HASH160);
             Script.writeBytes(scriptPubKeyBytes, Utils.HEX.decode
-                    ("0439cc2db2636303ea74af82dea750c44959ea968be1badf76428cf4cc25ae1c61127d642146e05a55880b163c061b5f81280800463c1d34da99af39dc1be879f4"));
-            scriptPubKeyBytes.write(ScriptOpCodes.OP_CHECKSIG);
+                    ("9a8abac6c3d97d37d627e6ebcaf68be72275168b"));
+            scriptPubKeyBytes.write(ScriptOpCodes.OP_EQUAL);
             t.addOutput(new TransactionOutput(n, t, GENESIS_COINS, scriptPubKeyBytes.toByteArray()));
         } catch (Exception e) {
             // Cannot happen.
