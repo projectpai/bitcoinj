@@ -38,7 +38,7 @@ import org.junit.rules.ExpectedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.bitcoinj.core.Coin.FIFTY_COINS;
+import static org.bitcoinj.core.Coin.THOUSAND_1_5_COINS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -144,7 +144,7 @@ public abstract class AbstractFullPrunedBlockChainTest {
 
         rollingBlock = rollingBlock.createNextBlock(null);
         Transaction t = new Transaction(PARAMS);
-        t.addOutput(new TransactionOutput(PARAMS, t, FIFTY_COINS, new byte[] {}));
+        t.addOutput(new TransactionOutput(PARAMS, t, THOUSAND_1_5_COINS, new byte[] {}));
         TransactionInput input = t.addInput(spendableOutput);
         // Invalid script.
         input.clearScriptBytes();
@@ -189,7 +189,7 @@ public abstract class AbstractFullPrunedBlockChainTest {
         
         Transaction t = new Transaction(PARAMS);
         // Entirely invalid scriptPubKey
-        t.addOutput(new TransactionOutput(PARAMS, t, FIFTY_COINS, new byte[]{}));
+        t.addOutput(new TransactionOutput(PARAMS, t, THOUSAND_1_5_COINS, new byte[]{}));
         t.addSignedInput(spendableOutput, new Script(spendableOutputScriptPubKey), outKey);
         rollingBlock.addTransaction(t);
         rollingBlock.solve();

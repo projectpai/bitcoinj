@@ -16,12 +16,11 @@
 
 package org.bitcoinj.core;
 
-import org.bitcoinj.utils.MonetaryFormat;
-import com.google.common.math.LongMath;
-import com.google.common.primitives.Longs;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
+import com.google.common.math.LongMath;
+import com.google.common.primitives.Longs;
+import org.bitcoinj.utils.MonetaryFormat;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -69,9 +68,9 @@ public final class Coin implements Monetary, Comparable<Coin>, Serializable {
     /**
      * A satoshi is the smallest unit that can be transferred. 100 million of them fit into a Bitcoin.
      */
-    public static final Coin SATOSHI = Coin.valueOf(1);
+    public static final Coin SATOSHI = COIN.divide(COIN_VALUE);
 
-    public static final Coin FIFTY_COINS = COIN.multiply(1500);
+    public static final Coin THOUSAND_1_5_COINS = COIN.multiply(1500);
     public static final Coin GENESIS_COINS = COIN.multiply(1470000000);
 
     /**
@@ -90,6 +89,10 @@ public final class Coin implements Monetary, Comparable<Coin>, Serializable {
 
     public static Coin valueOf(final long satoshis) {
         return new Coin(satoshis);
+    }
+
+    public static Coin of(long amount) {
+        return COIN.multiply(amount);
     }
 
     @Override

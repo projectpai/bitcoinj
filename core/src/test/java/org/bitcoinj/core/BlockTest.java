@@ -246,9 +246,10 @@ public class BlockTest {
     public void isBIPs() throws Exception {
         final MainNetParams mainnet = MainNetParams.get();
         final Block genesis = mainnet.getGenesisBlock();
-        assertFalse(genesis.isBIP34());
-        assertFalse(genesis.isBIP66());
-        assertFalse(genesis.isBIP65());
+        //our genesis block version is 4
+        assertTrue(genesis.isBIP34());
+        assertTrue(genesis.isBIP66());
+        assertTrue(genesis.isBIP65());
 
         // 227835/00000000000001aa077d7aa84c532a4d69bdbff519609d1da0835261b7a74eb6: last version 1 block
         final Block block227835 = mainnet.getDefaultSerializer()

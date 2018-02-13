@@ -68,7 +68,7 @@ import org.junit.Test;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.bitcoinj.core.Coin.COIN;
-import static org.bitcoinj.core.Coin.FIFTY_COINS;
+import static org.bitcoinj.core.Coin.THOUSAND_1_5_COINS;
 import static org.bitcoinj.testing.FakeTxBuilder.createFakeTx;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -397,7 +397,8 @@ public class WalletProtobufSerializerTest {
     @Test
     public void coinbaseTxns() throws Exception {
         // Covers issue 420 where the outpoint index of a coinbase tx input was being mis-serialized.
-        Block b = PARAMS.getGenesisBlock().createNextBlockWithCoinbase(Block.BLOCK_VERSION_GENESIS, myKey.getPubKey(), FIFTY_COINS, Block.BLOCK_HEIGHT_GENESIS);
+        Block b = PARAMS.getGenesisBlock().createNextBlockWithCoinbase(Block.BLOCK_VERSION_GENESIS, myKey.getPubKey(),
+            THOUSAND_1_5_COINS, Block.BLOCK_HEIGHT_GENESIS);
         Transaction coinbase = b.getTransactions().get(0);
         assertTrue(coinbase.isCoinBase());
         BlockChain chain = new BlockChain(PARAMS, myWallet, new MemoryBlockStore(PARAMS));

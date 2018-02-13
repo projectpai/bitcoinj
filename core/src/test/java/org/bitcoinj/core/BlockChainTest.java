@@ -37,7 +37,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static org.bitcoinj.core.Coin.COIN;
-import static org.bitcoinj.core.Coin.FIFTY_COINS;
+import static org.bitcoinj.core.Coin.THOUSAND_1_5_COINS;
 import static org.bitcoinj.core.Coin.ZERO;
 import static org.bitcoinj.core.Coin.valueOf;
 import static org.bitcoinj.testing.FakeTxBuilder.createFakeBlock;
@@ -328,7 +328,7 @@ public class BlockChainTest {
 
         // The coinbase tx is not yet available to spend.
         assertEquals(Coin.ZERO, wallet.getBalance());
-        assertEquals(wallet.getBalance(BalanceType.ESTIMATED), FIFTY_COINS);
+        assertEquals(wallet.getBalance(BalanceType.ESTIMATED), THOUSAND_1_5_COINS);
         assertTrue(!coinbaseTransaction.isMature());
 
         // Attempt to spend the coinbase - this should fail as the coinbase is not mature yet.
@@ -349,7 +349,7 @@ public class BlockChainTest {
 
             // Wallet still does not have the coinbase transaction available for spend.
             assertEquals(Coin.ZERO, wallet.getBalance());
-            assertEquals(wallet.getBalance(BalanceType.ESTIMATED), FIFTY_COINS);
+            assertEquals(wallet.getBalance(BalanceType.ESTIMATED), THOUSAND_1_5_COINS);
 
             // The coinbase transaction is still not mature.
             assertTrue(!coinbaseTransaction.isMature());
@@ -368,11 +368,11 @@ public class BlockChainTest {
         chain.add(b3);
 
         // Wallet now has the coinbase transaction available for spend.
-        assertEquals(wallet.getBalance(), FIFTY_COINS);
-        assertEquals(wallet.getBalance(BalanceType.ESTIMATED), FIFTY_COINS);
+        assertEquals(wallet.getBalance(), THOUSAND_1_5_COINS);
+        assertEquals(wallet.getBalance(BalanceType.ESTIMATED), THOUSAND_1_5_COINS);
         assertTrue(coinbaseTransaction.isMature());
 
-        Coin fortyNine = FIFTY_COINS.minus(Coin.COIN);
+        Coin fortyNine = THOUSAND_1_5_COINS.minus(Coin.COIN);
         // Create a spend with the coinbase BTC to the address in the second wallet - this should now succeed.
         Transaction coinbaseSend2 = wallet.createSend(addressToSendTo, fortyNine);
         assertNotNull(coinbaseSend2);
@@ -411,7 +411,7 @@ public class BlockChainTest {
         b1.setNonce(236038445);
         b1.setTime(1296734340);
         b1.setPrevBlockHash(Sha256Hash.wrap("00000007199508e34a9ff81e6ec0c477a4cccff2a4767a8eee39c11db367b008"));
-        assertEquals("000000033cc282bc1fa9dcae7a533263fd7fe66490f550d80076433340831604", b1.getHashAsString());
+        assertEquals("660cdb03e064755d18ec828488039e894540c66c79d425faba02bfef5111be55", b1.getHashAsString());
         b1.verifyHeader();
         return b1;
     }

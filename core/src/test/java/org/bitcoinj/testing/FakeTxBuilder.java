@@ -52,7 +52,7 @@ public class FakeTxBuilder {
         TransactionInput input = new TransactionInput(params, null, new byte[0], outpoint);
         Transaction tx = new Transaction(params);
         tx.addInput(input);
-        TransactionOutput outputToMe = new TransactionOutput(params, tx, Coin.FIFTY_COINS,
+        TransactionOutput outputToMe = new TransactionOutput(params, tx, Coin.THOUSAND_1_5_COINS,
                 new ECKey().toAddress(params));
         tx.addOutput(outputToMe);
 
