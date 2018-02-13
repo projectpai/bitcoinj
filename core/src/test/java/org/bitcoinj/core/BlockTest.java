@@ -61,7 +61,7 @@ public class BlockTest {
         // This number is printed by Bitcoin Core at startup as the calculated value of chainWork on testnet:
         //
         // SetBestChain: new best=00000007199508e34a9f  height=0  work=536879104
-        assertEquals(BigInteger.valueOf(16777472L), work);
+        assertEquals(BigInteger.valueOf(110020832341L), work);
     }
 
     @Test

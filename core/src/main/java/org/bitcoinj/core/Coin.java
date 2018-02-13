@@ -76,7 +76,7 @@ public final class Coin implements Monetary, Comparable<Coin>, Serializable {
     /**
      * Represents a monetary value of minus one satoshi.
      */
-    public static final Coin NEGATIVE_SATOSHI = Coin.valueOf(-1);
+    public static final Coin NEGATIVE_SATOSHI = SATOSHI.multiply(-1);
 
     /**
      * The number of satoshis of this monetary value.
