@@ -38,23 +38,23 @@ public class TestNet3Params extends AbstractBitcoinNetParams {
     public TestNet3Params() {
         super();
         id = ID_TESTNET;
-        // Genesis hash is 0000002f5c83a7623d63874482044286a30ee85f262440c5d6c7db95bdf0f8f9
+        // Genesis hash is 0000000003976df1a1393912d10ea68fae1175ee2c7e6011a0dc4e05f18f8403
         packetMagic = 0x0b091107;
         interval = INTERVAL;
         targetTimespan = TARGET_TIMESPAN;
-        maxTarget = Utils.decodeCompactBits(0x1e00ffffL);
+        maxTarget = Utils.decodeCompactBits(0x1c09fe61L);
         port = 18567;
         addressHeader = 51;
         p2shHeader = 180;
         acceptableAddressCodes = new int[] { addressHeader, p2shHeader };
         dumpedPrivateKeyHeader = 226;
-        genesisBlock.setTime(1504706400L);
-        genesisBlock.setDifficultyTarget(0x1e00ffffL);
-        genesisBlock.setNonce(3515866);
+        genesisBlock.setTime(1504706516L);
+        genesisBlock.setDifficultyTarget(0x1c09fe61L);
+        genesisBlock.setNonce(2253953817L);
         spendableCoinbaseDepth = 100;
         subsidyDecreaseBlockCount = 210000;
         String genesisHash = genesisBlock.getHashAsString();
-        checkState(genesisHash.equals("0000002f5c83a7623d63874482044286a30ee85f262440c5d6c7db95bdf0f8f9"));
+        checkState(genesisHash.equals("0000000003976df1a1393912d10ea68fae1175ee2c7e6011a0dc4e05f18f8403"));
         // Paicoin no need for a different alert key for the moment
         //alertSigningKey = Utils.HEX.decode("04302390343f91cc401d56d68b123028bf52e5fca1939df127f63c6467cdf9c8e2c14b61104cf817d0b780da337893ecc4aaff1309e536162dabbdb45200ca2b0a");
 
