@@ -16,35 +16,53 @@
 
 package org.bitcoinj.core;
 
+import java.nio.ByteBuffer;
+import java.util.Collection;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.params.TestNet3Params;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
-import static org.bitcoinj.core.Utils.HEX;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
 
 /**
  *
  */
+@RunWith(Parameterized.class)
 public class VersionedChecksummedBytesTest {
-    static final NetworkParameters testParams = TestNet3Params.get();
-    static final NetworkParameters mainParams = MainNetParams.get();
+
+    public VersionedChecksummedBytesTest(NetworkParameters params) {
+        this.params = params;
+    }
+
+    @Parameterized.Parameters
+    public static Collection<NetworkParameters> networks() {
+        return asList(TestNet3Params.get(),
+            MainNetParams.get());
+    }
+
+    private final NetworkParameters params;
 
     @Test
     public void stringification() throws Exception {
         // Test a testnet address.
-        VersionedChecksummedBytes a = new VersionedChecksummedBytes(testParams.getAddressHeader(), HEX.decode("fda79a24e50ff70ff42f7d89585da5bd19d9e5cc"));
-        assertEquals("n4eA2nbYqErp7H6jebchxAN59DmNpksexv", a.toString());
 
-        VersionedChecksummedBytes b = new VersionedChecksummedBytes(mainParams.getAddressHeader(), HEX.decode("4a22c3c4cbb31e4d03b15550636762bda0baf85a"));
-        assertEquals("17kzeh4N8g49GFvdDzSf8PjaPfyoD1MndL", b.toString());
+        VersionedChecksummedBytes val = GeneratorUtil.bytesByParams(params);
+        byte[] lastHash = GeneratorUtil.lastHash();
+        ByteBuffer bb = ByteBuffer.allocate(lastHash.length + 1);
+        bb.put((byte) params.addressHeader);
+        bb.put(lastHash);
+
+        String base58 = Base58.encode(GeneratorUtil.withChecksum4B(bb.array()));
+        assertEquals(base58, val.toString());
     }
 
     @Test
     public void cloning() throws Exception {
-        VersionedChecksummedBytes a = new VersionedChecksummedBytes(testParams.getAddressHeader(), HEX.decode("fda79a24e50ff70ff42f7d89585da5bd19d9e5cc"));
+        VersionedChecksummedBytes a = GeneratorUtil.bytesByParams(params);
         VersionedChecksummedBytes b = a.clone();
 
         assertEquals(a, b);
@@ -53,9 +71,10 @@ public class VersionedChecksummedBytesTest {
 
     @Test
     public void comparisonCloneEqualTo() throws Exception {
-        VersionedChecksummedBytes a = new VersionedChecksummedBytes(testParams.getAddressHeader(), HEX.decode("fda79a24e50ff70ff42f7d89585da5bd19d9e5cc"));
+        VersionedChecksummedBytes a = GeneratorUtil.bytesByParams(params);
         VersionedChecksummedBytes b = a.clone();
 
-        assertTrue(a.compareTo(b) == 0);
+        assertEquals(0, a.compareTo(b));
+        assertEquals(0, b.compareTo(a));
     }
 }

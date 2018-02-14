@@ -16,28 +16,48 @@
 
 package org.bitcoinj.utils;
 
+import java.math.BigDecimal;
+import java.text.AttributedCharacterIterator;
+import java.text.AttributedCharacterIterator.Attribute;
+import java.text.CharacterIterator;
+import java.text.DecimalFormat;
+import java.text.FieldPosition;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 import org.bitcoinj.core.Coin;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.math.BigDecimal;
-import java.text.*;
-import java.text.AttributedCharacterIterator.Attribute;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
-
-import static org.bitcoinj.core.Coin.*;
+import static java.text.NumberFormat.Field.DECIMAL_SEPARATOR;
+import static java.util.Locale.CHINA;
+import static java.util.Locale.FRANCE;
+import static java.util.Locale.GERMANY;
+import static java.util.Locale.ITALY;
+import static java.util.Locale.JAPAN;
+import static java.util.Locale.TAIWAN;
+import static java.util.Locale.US;
+import static org.bitcoinj.core.Coin.COIN;
+import static org.bitcoinj.core.Coin.SATOSHI;
+import static org.bitcoinj.core.Coin.SMALLEST_UNIT_EXPONENT;
+import static org.bitcoinj.core.Coin.ZERO;
+import static org.bitcoinj.core.Coin.parseCoin;
+import static org.bitcoinj.core.Coin.valueOf;
 import static org.bitcoinj.core.NetworkParameters.MAX_MONEY;
 import static org.bitcoinj.utils.BtcAutoFormat.Style.CODE;
 import static org.bitcoinj.utils.BtcAutoFormat.Style.SYMBOL;
 import static org.bitcoinj.utils.BtcFixedFormat.REPEATING_DOUBLETS;
 import static org.bitcoinj.utils.BtcFixedFormat.REPEATING_TRIPLETS;
-import static java.text.NumberFormat.Field.DECIMAL_SEPARATOR;
-import static java.util.Locale.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
 public class BtcFormatTest {
@@ -211,19 +231,20 @@ public class BtcFormatTest {
     public void repeatingPlaceTest() {
         BtcFormat mega = BtcFormat.getInstance(-6, US);
         Coin value = MAX_MONEY.subtract(SATOSHI);
-        assertEquals("20.99999999999999", mega.format(value, 0, BtcFixedFormat.REPEATING_PLACES));
-        assertEquals("20.99999999999999", mega.format(value, 0, BtcFixedFormat.REPEATING_PLACES));
-        assertEquals("20.99999999999999", mega.format(value, 1, BtcFixedFormat.REPEATING_PLACES));
-        assertEquals("20.99999999999999", mega.format(value, 2, BtcFixedFormat.REPEATING_PLACES));
-        assertEquals("20.99999999999999", mega.format(value, 3, BtcFixedFormat.REPEATING_PLACES));
-        assertEquals("20.99999999999999", mega.format(value, 0, BtcFixedFormat.REPEATING_DOUBLETS));
-        assertEquals("20.99999999999999", mega.format(value, 1, BtcFixedFormat.REPEATING_DOUBLETS));
-        assertEquals("20.99999999999999", mega.format(value, 2, BtcFixedFormat.REPEATING_DOUBLETS));
-        assertEquals("20.99999999999999", mega.format(value, 3, BtcFixedFormat.REPEATING_DOUBLETS));
-        assertEquals("20.99999999999999", mega.format(value, 0, BtcFixedFormat.REPEATING_TRIPLETS));
-        assertEquals("20.99999999999999", mega.format(value, 1, BtcFixedFormat.REPEATING_TRIPLETS));
-        assertEquals("20.99999999999999", mega.format(value, 2, BtcFixedFormat.REPEATING_TRIPLETS));
-        assertEquals("20.99999999999999", mega.format(value, 3, BtcFixedFormat.REPEATING_TRIPLETS));
+        assertEquals("2,099.99999999999999", mega.format(value, 0, BtcFixedFormat
+            .REPEATING_PLACES));
+        assertEquals("2,099.99999999999999", mega.format(value, 0, BtcFixedFormat.REPEATING_PLACES));
+        assertEquals("2,099.99999999999999", mega.format(value, 1, BtcFixedFormat.REPEATING_PLACES));
+        assertEquals("2,099.99999999999999", mega.format(value, 2, BtcFixedFormat.REPEATING_PLACES));
+        assertEquals("2,099.99999999999999", mega.format(value, 3, BtcFixedFormat.REPEATING_PLACES));
+        assertEquals("2,099.99999999999999", mega.format(value, 0, BtcFixedFormat.REPEATING_DOUBLETS));
+        assertEquals("2,099.99999999999999", mega.format(value, 1, BtcFixedFormat.REPEATING_DOUBLETS));
+        assertEquals("2,099.99999999999999", mega.format(value, 2, BtcFixedFormat.REPEATING_DOUBLETS));
+        assertEquals("2,099.99999999999999", mega.format(value, 3, BtcFixedFormat.REPEATING_DOUBLETS));
+        assertEquals("2,099.99999999999999", mega.format(value, 0, BtcFixedFormat.REPEATING_TRIPLETS));
+        assertEquals("2,099.99999999999999", mega.format(value, 1, BtcFixedFormat.REPEATING_TRIPLETS));
+        assertEquals("2,099.99999999999999", mega.format(value, 2, BtcFixedFormat.REPEATING_TRIPLETS));
+        assertEquals("2,099.99999999999999", mega.format(value, 3, BtcFixedFormat.REPEATING_TRIPLETS));
         assertEquals("1.00000005", BtcFormat.getCoinInstance(US).
                                    format(COIN.add(Coin.valueOf(5)), 0, BtcFixedFormat.REPEATING_PLACES));
     }
@@ -1149,8 +1170,8 @@ public class BtcFormatTest {
         assertEquals("11,223,344.5567", coinFormat.format(value, 4));
 
         BtcFormat megaFormat = BtcFormat.getInstance(-6, US);
-        assertEquals("21.00", megaFormat.format(MAX_MONEY));
-        assertEquals("21", megaFormat.format(MAX_MONEY, 0));
+        assertEquals("2,100.00", megaFormat.format(MAX_MONEY));
+        assertEquals("2,100", megaFormat.format(MAX_MONEY, 0));
         assertEquals("11.22334455667788", megaFormat.format(value, 0, REPEATING_DOUBLETS));
         assertEquals("11.223344556677", megaFormat.format(Coin.valueOf(1122334455667700l), 0, REPEATING_DOUBLETS));
         assertEquals("11.22334455667788", megaFormat.format(value, 0, REPEATING_TRIPLETS));

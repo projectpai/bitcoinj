@@ -40,7 +40,7 @@ public class MainNetParams extends AbstractBitcoinNetParams {
         p2shHeader = 130;
         acceptableAddressCodes = new int[] { addressHeader, p2shHeader };
         port = 8567;
-        packetMagic = 0xfed0d5f2L;
+        packetMagic = 0xfed0d5f2;
         bip32HeaderPub = 0x03DD47AF; //The 4 byte header that serializes in base58 to "paip".
         bip32HeaderPriv = 0x03DD47D9; //The 4 byte header that serializes in base58 to "paiv"
 

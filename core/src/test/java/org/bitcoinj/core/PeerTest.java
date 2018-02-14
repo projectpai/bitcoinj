@@ -910,7 +910,7 @@ public class PeerTest extends TestWithNetworkConnections {
         inbound(writeTarget, response1);
         assertEquals(future1.get(), response1);
 
-        TransactionOutput out2 = new TransactionOutput(PARAMS, null, Coin.FIFTY_COINS, key);
+        TransactionOutput out2 = new TransactionOutput(PARAMS, null, Coin.THOUSAND_1_5_COINS, key);
         UTXOsMessage response2 = new UTXOsMessage(PARAMS, ImmutableList.of(out2), new long[]{1000}, Sha256Hash.ZERO_HASH, 1234);
         inbound(writeTarget, response2);
         assertEquals(future2.get(), response2);

@@ -16,32 +16,49 @@
 
 package org.bitcoinj.wallet;
 
-import org.bitcoinj.core.*;
-import org.bitcoinj.crypto.*;
+import java.math.BigInteger;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import com.google.common.collect.ImmutableList;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.BloomFilter;
+import org.bitcoinj.core.DataCorrector;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.Sha256Hash;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.crypto.DeterministicKey;
+import org.bitcoinj.crypto.KeyCrypterException;
+import org.bitcoinj.crypto.KeyCrypterScrypt;
+import org.bitcoinj.crypto.MnemonicCode;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.utils.BriefLogFormatter;
 import org.bitcoinj.utils.Threading;
 import org.bitcoinj.wallet.listeners.KeyChainEventListener;
-
-import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.spongycastle.crypto.params.KeyParameter;
 import org.spongycastle.util.Arrays;
 
-import java.math.BigInteger;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class KeyChainGroupTest {
     // Number of initial keys in this tests HD wallet, including interior keys.
     private static final int INITIAL_KEYS = 4;
     private static final int LOOKAHEAD_SIZE = 5;
     private static final NetworkParameters PARAMS = MainNetParams.get();
-    private static final String XPUB = "xpub68KFnj3bqUx1s7mHejLDBPywCAKdJEu1b49uniEEn2WSbHmZ7xbLqFTjJbtx1LUcAt1DwhoqWHmo2s5WMJp6wi38CiF2hYD49qVViKVvAoi";
+
+    private static final String XPUB = DataCorrector.correctDerivedPublicKey(
+        PARAMS, "xpub68KFnj3bqUx1s7mHejLDBPywCAKdJEu1b49uniEEn2WSbHmZ7xbLqFTjJbtx1LUcAt1DwhoqWHmo2s5WMJp6wi38CiF2hYD49qVViKVvAoi"
+    );
     private KeyChainGroup group;
     private DeterministicKey watchingAccountKey;
 
@@ -597,11 +614,15 @@ public class KeyChainGroupTest {
     @Test
     public void isWatching() {
         group = new KeyChainGroup(
-                PARAMS,
-                DeterministicKey
-                        .deserializeB58(
-                                "xpub69bjfJ91ikC5ghsqsVDHNq2dRGaV2HHVx7Y9LXi27LN9BWWAXPTQr4u8U3wAtap8bLdHdkqPpAcZmhMS5SnrMQC4ccaoBccFhh315P4UYzo",
-                                PARAMS));
+            PARAMS,
+            DeterministicKey.deserializeB58(
+                DataCorrector.correctDerivedPublicKey(
+                    PARAMS,
+                    "xpub69bjfJ91ikC5ghsqsVDHNq2dRGaV2HHVx7Y9LXi27LN9BWWAXPTQr4u8U3wAtap8bLdHdkqPpAcZmhMS5SnrMQC4ccaoBccFhh315P4UYzo"
+                ),
+                PARAMS
+            )
+        );
         final ECKey watchingKey = ECKey.fromPublicOnly(new ECKey().getPubKeyPoint());
         group.importKeys(watchingKey);
         assertTrue(group.isWatching());
@@ -616,11 +637,15 @@ public class KeyChainGroupTest {
     @Test(expected = IllegalStateException.class)
     public void isWatchingMixedKeys() {
         group = new KeyChainGroup(
-                PARAMS,
-                DeterministicKey
-                        .deserializeB58(
-                                "xpub69bjfJ91ikC5ghsqsVDHNq2dRGaV2HHVx7Y9LXi27LN9BWWAXPTQr4u8U3wAtap8bLdHdkqPpAcZmhMS5SnrMQC4ccaoBccFhh315P4UYzo",
-                                PARAMS));
+            PARAMS,
+            DeterministicKey.deserializeB58(
+                DataCorrector.correctDerivedPublicKey(
+                    PARAMS,
+                    "xpub69bjfJ91ikC5ghsqsVDHNq2dRGaV2HHVx7Y9LXi27LN9BWWAXPTQr4u8U3wAtap8bLdHdkqPpAcZmhMS5SnrMQC4ccaoBccFhh315P4UYzo"
+                ),
+                PARAMS
+            )
+        );
         final ECKey key = ECKey.fromPrivate(BigInteger.TEN);
         group.importKeys(key);
         group.isWatching();

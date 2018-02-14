@@ -73,7 +73,8 @@ public abstract class NetworkParameters {
     protected Block genesisBlock;
     protected BigInteger maxTarget;
     protected int port;
-    protected long packetMagic;  // Indicates message origin network and is used to seek to the next message when stream state is unknown.
+    protected int packetMagic;  // Indicates message origin network and is used to seek to the next
+    // message when stream state is unknown.
     protected int addressHeader;
     protected int p2shHeader;
     protected int dumpedPrivateKeyHeader;
@@ -306,7 +307,7 @@ public abstract class NetworkParameters {
     }
 
     /** The header bytes that identify the start of a packet on this network. */
-    public long getPacketMagic() {
+    public int getPacketMagic() {
         return packetMagic;
     }
 
@@ -508,6 +509,7 @@ public abstract class NetworkParameters {
         // Start enforcing CHECKLOCKTIMEVERIFY, (BIP65) for block.nVersion=4
         // blocks, when 75% of the network has upgraded:
         if (block.getVersion() >= Block.BLOCK_VERSION_BIP65 &&
+            tally.getCountAtOrAbove(Block.BLOCK_VERSION_BIP65) != null &&
             tally.getCountAtOrAbove(Block.BLOCK_VERSION_BIP65) > this.getMajorityEnforceBlockUpgrade()) {
             verifyFlags.add(Script.VerifyFlag.CHECKLOCKTIMEVERIFY);
         }

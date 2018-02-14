@@ -29,6 +29,11 @@ import static org.junit.Assert.*;
  * This test is adapted from Armory's BIP 32 tests.
  */
 public class ChildKeyDerivationTest {
+    private static final String MASTER_SEED = "satoshi lives!";
+    private static final String PUB_KEY =
+        "paip6Nt6Wry8bUrjT4No3LtZRvNJH1Cmw5wjS1NQyc1ytyp6xfQaMRZtXr7uQDrXmc4Cmr2Gxwvae8LmvmWzrscgReG86FmHuydFKph94g6ZoWm";
+    private static final String PRIV_KEY =
+        "paiv7CLsatDqdaCRgJSQ5WPD5JLEzmmRhdY4BPk1M8ar4GyTHaEhsGp772i54FyuLfuDgYuVPEKB71eVLpNhpbPKBJHsaHZTBQmpEWf4abNWV21";
     private static final int HDW_CHAIN_EXTERNAL = 0;
     private static final int HDW_CHAIN_INTERNAL = 1;
 
@@ -191,13 +196,13 @@ public class ChildKeyDerivationTest {
         NetworkParameters params = MainNetParams.get();
         String pub58 = key1.serializePubB58(params);
         String priv58 = key1.serializePrivB58(params);
-        assertEquals("xpub661MyMwAqRbcF7mq7Aejj5xZNzFfgi3ABamE9FedDHVmViSzSxYTgAQGcATDo2J821q7Y9EAagjg5EP3L7uBZk11PxZU3hikL59dexfLkz3", pub58);
-        assertEquals("xprv9s21ZrQH143K2dhN197jMx1ppxRBHFKJpMqdLsF1ewxncv7quRED8N5nksxphju3W7naj1arF56L5PUEWfuSk8h73Sb2uh7bSwyXNrjzhAZ", priv58);
+        assertEquals(DataCorrector.correctDerivedPublicKey(params, PUB_KEY), pub58);
+        assertEquals(DataCorrector.correctDerivedPrivateKey(params, PRIV_KEY), priv58);
         params = TestNet3Params.get();
         pub58 = key1.serializePubB58(params);
         priv58 = key1.serializePrivB58(params);
-        assertEquals("tpubD6NzVbkrYhZ4WuxgZMdpw1Hvi7MKg6YDjDMXVohmZCFfF17hXBPYpc56rCY1KXFMovN29ik37nZimQseiykRTBTJTZJmjENyv2k3R12BJ1M", pub58);
-        assertEquals("tprv8ZgxMBicQKsPdSvtfhyEXbdp95qPWmMK9ukkDHfU8vTGQWrvtnZxe7TEg48Ui7HMsZKMj7CcQRg8YF1ydtFPZBxha5oLa3qeN3iwpYhHPVZ", priv58);
+        assertEquals(DataCorrector.correctDerivedPublicKey(params, PUB_KEY), pub58);
+        assertEquals(DataCorrector.correctDerivedPrivateKey(params, PRIV_KEY), priv58);
     }
 
     @Test
@@ -214,10 +219,12 @@ public class ChildKeyDerivationTest {
             final String priv58 = key1.serializePrivB58(params);
             final byte[] pub = key1.serializePublic(params);
             final byte[] priv = key1.serializePrivate(params);
-            assertEquals("xpub661MyMwAqRbcF7mq7Aejj5xZNzFfgi3ABamE9FedDHVmViSzSxYTgAQGcATDo2J821q7Y9EAagjg5EP3L7uBZk11PxZU3hikL59dexfLkz3", pub58);
-            assertEquals("xprv9s21ZrQH143K2dhN197jMx1ppxRBHFKJpMqdLsF1ewxncv7quRED8N5nksxphju3W7naj1arF56L5PUEWfuSk8h73Sb2uh7bSwyXNrjzhAZ", priv58);
-            assertArrayEquals(new byte[]{4, -120, -78, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 57, -68, 93, -104, -97, 31, -105, -18, 109, 112, 104, 45, -77, -77, 18, 85, -29, -120, 86, -113, 26, 48, -18, -79, -110, -6, -27, 87, 86, 24, 124, 99, 3, 96, -33, -14, 67, -19, -47, 16, 76, -49, -11, -30, -123, 7, 56, 101, 91, 74, 125, -127, 61, 42, -103, 90, -93, 66, -36, 2, -126, -107, 30, 24, -111}, pub);
-            assertArrayEquals(new byte[]{4, -120, -83, -28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 57, -68, 93, -104, -97, 31, -105, -18, 109, 112, 104, 45, -77, -77, 18, 85, -29, -120, 86, -113, 26, 48, -18, -79, -110, -6, -27, 87, 86, 24, 124, 99, 0, -96, -75, 47, 90, -49, 92, -74, 92, -128, -125, 23, 38, -10, 97, -66, -19, 50, -112, 30, -111, -57, -124, 118, -86, 126, -35, -4, -51, 19, 109, 67, 116}, priv);
+            String expectedPublic = DataCorrector.correctDerivedPublicKey(params, PUB_KEY);
+            String expectedPrivate = DataCorrector.correctDerivedPrivateKey(params, PRIV_KEY);
+            assertEquals(expectedPublic, pub58);
+            assertEquals(expectedPrivate, priv58);
+            assertArrayEquals(Base58.decodeChecked(expectedPublic), pub);
+            assertArrayEquals(Base58.decodeChecked(expectedPrivate), priv);
             assertEquals(DeterministicKey.deserializeB58(null, priv58, params), key1);
             assertEquals(DeterministicKey.deserializeB58(priv58, params), key1);
             assertEquals(DeterministicKey.deserializeB58(null, pub58, params).getPubKeyPoint(), key1.getPubKeyPoint());
@@ -257,20 +264,23 @@ public class ChildKeyDerivationTest {
     public void reserialization() {
         // This is the public encoding of the key with path m/0H/1/2H from BIP32 published test vector 1:
         // https://en.bitcoin.it/wiki/BIP_0032_TestVectors
-        String encoded =
-            "xpub6D4BDPcP2GT577Vvch3R8wDkScZWzQzMMUm3PWbmWvVJrZwQY4VUNgqFJPMM3No2dFDFGTsxxpG5uJh7n7epu4trkrX7x7DogT5Uv6fcLW5";
-        DeterministicKey key = DeterministicKey.deserializeB58(encoded, MainNetParams.get());
-        assertEquals("Reserialized parentless private HD key is wrong", key.serializePubB58(MainNetParams.get()), encoded);
+        NetworkParameters params = MainNetParams.get();
+        String encoded = DataCorrector.correctDerivedPublicKey(params,
+            "xpub6D4BDPcP2GT577Vvch3R8wDkScZWzQzMMUm3PWbmWvVJrZwQY4VUNgqFJPMM3No2dFDFGTsxxpG5uJh7n7epu4trkrX7x7DogT5Uv6fcLW5");
+        DeterministicKey key = DeterministicKey.deserializeB58(encoded, params);
+        assertEquals("Reserialized parentless private HD key is wrong", key.serializePubB58(params),
+            encoded);
         assertEquals("Depth of deserialized parentless public HD key is wrong", key.getDepth(), 3);
         assertEquals("Path size of deserialized parentless public HD key is wrong", key.getPath().size(), 1);
         assertEquals("Parent fingerprint of deserialized parentless public HD key is wrong",
                           key.getParentFingerprint(), 0xbef5a2f9);
 
         // This encoding is the same key but including its private data:
-        encoded =
-            "xprv9z4pot5VBttmtdRTWfWQmoH1taj2axGVzFqSb8C9xaxKymcFzXBDptWmT7FwuEzG3ryjH4ktypQSAewRiNMjANTtpgP4mLTj34bhnZX7UiM";
-        key = DeterministicKey.deserializeB58(encoded, MainNetParams.get());
-        assertEquals("Reserialized parentless private HD key is wrong", key.serializePrivB58(MainNetParams.get()), encoded);
+        encoded = DataCorrector.correctDerivedPrivateKey(params,
+            "xprv9z4pot5VBttmtdRTWfWQmoH1taj2axGVzFqSb8C9xaxKymcFzXBDptWmT7FwuEzG3ryjH4ktypQSAewRiNMjANTtpgP4mLTj34bhnZX7UiM");
+        key = DeterministicKey.deserializeB58(encoded, params);
+        assertEquals("Reserialized parentless private HD key is wrong", key.serializePrivB58(params),
+            encoded);
         assertEquals("Depth of deserialized parentless private HD key is wrong", key.getDepth(), 3);
         assertEquals("Path size of deserialized parentless private HD key is wrong", key.getPath().size(), 1);
         assertEquals("Parent fingerprint of deserialized parentless private HD key is wrong",
@@ -278,10 +288,18 @@ public class ChildKeyDerivationTest {
 
         // These encodings are of the the root key of that hierarchy
         assertEquals("Parent fingerprint of root node public HD key should be zero",
-                          DeterministicKey.deserializeB58("xpub661MyMwAqRbcFW31YEwpkMuc5THy2PSt5bDMsktWQcFF8syAmRUapSCGu8ED9W6oDMSgv6Zz8idoc4a6mr8BDzTJY47LJhkJ8UB7WEGuduB", MainNetParams.get()).getParentFingerprint(),
+                          DeterministicKey.deserializeB58(
+                              DataCorrector.correctDerivedPublicKey(params,
+                                  "xpub661MyMwAqRbcFW31YEwpkMuc5THy2PSt5bDMsktWQcFF8syAmRUapSCGu8ED9W6oDMSgv6Zz8idoc4a6mr8BDzTJY47LJhkJ8UB7WEGuduB"),
+                              params
+                          ).getParentFingerprint(),
                           0);
         assertEquals("Parent fingerprint of root node private HD key should be zero",
-                          DeterministicKey.deserializeB58("xprv9s21ZrQH143K31xYSDQpPDxsXRTUcvj2iNHm5NUtrGiGG5e2DtALGdso3pGz6ssrdK4PFmM8NSpSBHNqPqm55Qn3LqFtT2emdEXVYsCzC2U", MainNetParams.get()).getParentFingerprint(),
+                          DeterministicKey.deserializeB58(
+                              DataCorrector.correctDerivedPrivateKey(params,
+                                  "xprv9s21ZrQH143K31xYSDQpPDxsXRTUcvj2iNHm5NUtrGiGG5e2DtALGdso3pGz6ssrdK4PFmM8NSpSBHNqPqm55Qn3LqFtT2emdEXVYsCzC2U"),
+                                  params
+                          ).getParentFingerprint(),
                           0);
 
     }

@@ -17,15 +17,16 @@
 
 package org.bitcoinj.core;
 
+import java.util.Arrays;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.wallet.KeyChainGroup;
 import org.bitcoinj.wallet.Wallet;
 import org.junit.Test;
 
-import java.util.Arrays;
-
 import static org.bitcoinj.core.Utils.HEX;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class BloomFilterTest {
     @Test
@@ -71,10 +72,12 @@ public class BloomFilterTest {
         NetworkParameters params = MainNetParams.get();
         Context.propagate(new Context(params));
 
-        DumpedPrivateKey privKey = DumpedPrivateKey.fromBase58(params, "5Kg1gnAjaLfKiwhhPpGS3QfRg2m6awQvaj98JCZBZQ5SuS2F15C");
+        DumpedPrivateKey privKey = DataCorrector.correctDumpedPrivateKey(params,
+        "5Kg1gnAjaLfKiwhhPpGS3QfRg2m6awQvaj98JCZBZQ5SuS2F15C", false);
 
         Address addr = privKey.getKey().toAddress(params);
-        assertTrue(addr.toString().equals("17Wx1GQfyPTNWpQMHrTwRSMTCAonSiZx9e"));
+        assertEquals(DataCorrector.correctAddress(params,"17Wx1GQfyPTNWpQMHrTwRSMTCAonSiZx9e"),
+            addr);
 
         KeyChainGroup group = new KeyChainGroup(params);
         // Add a random key which happens to have been used in a recent generation

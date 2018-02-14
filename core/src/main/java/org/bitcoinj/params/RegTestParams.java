@@ -60,7 +60,7 @@ public class RegTestParams extends TestNet3Params {
                 genesis.setNonce(1);
                 genesis.setDifficultyTarget(0x207fFFFFL);
                 genesis.setTime(1509798928L);
-                checkState(genesis.getHashAsString().toLowerCase().equals("190a4f6022b980ee9719200b024c1b9df515baea3afbccf1adc93c70aa93941f"));
+                checkState(genesis.getHashAsString().toLowerCase().equals("e3b96f7ce6d0a788c4f99573b1cb1f95eed76bf0dba2b7cd8a5c68a56013a700"));
             }
             return genesis;
         }

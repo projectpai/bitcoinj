@@ -18,14 +18,6 @@
 
 package org.bitcoinj.script;
 
-import org.bitcoinj.core.*;
-import org.bitcoinj.crypto.TransactionSignature;
-import com.google.common.collect.Lists;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.spongycastle.crypto.digests.RIPEMD160Digest;
-
-import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -33,10 +25,34 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
+import com.google.common.collect.Lists;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.ProtocolException;
+import org.bitcoinj.core.ScriptException;
+import org.bitcoinj.core.Sha256Hash;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.UnsafeByteArrayOutputStream;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.crypto.TransactionSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.spongycastle.crypto.digests.RIPEMD160Digest;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 import static org.bitcoinj.script.ScriptOpCodes.*;
-import static com.google.common.base.Preconditions.*;
 
 // TODO: Redesign this entire API to be more type safe and organised.
 
@@ -601,7 +617,7 @@ public class Script {
         try {
             script.parse(program);
         } catch (ScriptException e) {
-            // Ignore errors and count up to the parse-able length
+            log.debug("Exception occurred", e);
         }
         return getSigOpCount(script.chunks, false);
     }
@@ -614,7 +630,7 @@ public class Script {
         try {
             script.parse(scriptSig);
         } catch (ScriptException e) {
-            // Ignore errors and count up to the parse-able length
+            log.debug("Exception occurred", e);
         }
         for (int i = script.chunks.size() - 1; i >= 0; i--)
             if (!script.chunks.get(i).isOpCode()) {
@@ -1461,6 +1477,9 @@ public class Script {
             // signing work to be done inside LocalTransactionSigner.signInputs.
             if (!e1.getMessage().contains("Reached past end of ASN.1 stream"))
                 log.warn("Signature checking failed!", e1);
+            else {
+                log.debug("Exception occurred", e1);
+            }
         }
 
         if (opcode == OP_CHECKSIG)
@@ -1531,6 +1550,7 @@ public class Script {
             } catch (Exception e) {
                 // There is (at least) one exception that could be hit here (EOFException, if the sig is too short)
                 // Because I can't verify there aren't more, we use a very generic Exception catch
+                log.debug("Exception occurred", e);
             }
 
             if (sigs.size() > pubkeys.size()) {

@@ -16,17 +16,17 @@
 
 package org.bitcoinj.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
-import org.junit.Test;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.params.TestNet3Params;
+import org.junit.Assert;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
 public class DumpedPrivateKeyTest {
 
@@ -35,12 +35,17 @@ public class DumpedPrivateKeyTest {
 
     @Test
     public void checkNetwork() throws Exception {
-        DumpedPrivateKey.fromBase58(MAINNET, "5HtUCLMFWNueqN9unpgX2DzjMg6SDNZyKRb8s3LJgpFg5ubuMrk");
+        DumpedPrivateKey expected = DataCorrector.correctDumpedPrivateKey(MAINNET,
+            "5HtUCLMFWNueqN9unpgX2DzjMg6SDNZyKRb8s3LJgpFg5ubuMrk", false);
+        DumpedPrivateKey actual = DumpedPrivateKey.fromBase58(MAINNET, expected.toBase58());
+        Assert.assertEquals(expected, actual);
     }
 
     @Test(expected = WrongNetworkException.class)
     public void checkNetworkWrong() throws Exception {
-        DumpedPrivateKey.fromBase58(TESTNET, "5HtUCLMFWNueqN9unpgX2DzjMg6SDNZyKRb8s3LJgpFg5ubuMrk");
+        DumpedPrivateKey validForMainNet = DataCorrector.correctDumpedPrivateKey(MAINNET,
+            "5HtUCLMFWNueqN9unpgX2DzjMg6SDNZyKRb8s3LJgpFg5ubuMrk", false);
+        DumpedPrivateKey.fromBase58(TESTNET, validForMainNet.toBase58());
     }
 
     @Test

@@ -195,14 +195,14 @@ public class FullBlockTestGenerator {
         blocks.add(new BlockAndValidity(chainHead, true, false, chainHead.getHash(), 1, "Initial Block"));
         spendableOutputs.offer(new TransactionOutPointWithValue(
                 new TransactionOutPoint(params, 0, chainHead.getTransactions().get(0).getHash()),
-                FIFTY_COINS, chainHead.getTransactions().get(0).getOutputs().get(0).getScriptPubKey()));
+            THOUSAND_1_5_COINS, chainHead.getTransactions().get(0).getOutputs().get(0).getScriptPubKey()));
         for (int i = 1; i < params.getSpendableCoinbaseDepth(); i++) {
             chainHead = chainHead.createNextBlockWithCoinbase(Block.BLOCK_VERSION_GENESIS, coinbaseOutKeyPubKey, chainHeadHeight);
             chainHeadHeight++;
             blocks.add(new BlockAndValidity(chainHead, true, false, chainHead.getHash(), i+1, "Initial Block chain output generation"));
             spendableOutputs.offer(new TransactionOutPointWithValue(
                     new TransactionOutPoint(params, 0, chainHead.getTransactions().get(0).getHash()),
-                    FIFTY_COINS, chainHead.getTransactions().get(0).getOutputs().get(0).getScriptPubKey()));
+                THOUSAND_1_5_COINS, chainHead.getTransactions().get(0).getOutputs().get(0).getScriptPubKey()));
         }
 
         // Start by building a couple of blocks on top of the genesis block.
@@ -1779,7 +1779,7 @@ public class FullBlockTestGenerator {
         Integer height = blockToHeightMap.get(baseBlock.getHash());
         if (height != null)
             checkState(height == nextBlockHeight - 1);
-        Coin coinbaseValue = FIFTY_COINS.shiftRight(nextBlockHeight / params.getSubsidyDecreaseBlockCount())
+        Coin coinbaseValue = THOUSAND_1_5_COINS.shiftRight(nextBlockHeight / params.getSubsidyDecreaseBlockCount())
                 .add((prevOut != null ? prevOut.value.subtract(SATOSHI) : ZERO))
                 .add(additionalCoinbaseValue == null ? ZERO : additionalCoinbaseValue);
         Block block = baseBlock.createNextBlockWithCoinbase(Block.BLOCK_VERSION_GENESIS, coinbaseOutKeyPubKey, coinbaseValue, nextBlockHeight);

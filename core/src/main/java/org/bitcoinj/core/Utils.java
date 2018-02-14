@@ -17,16 +17,6 @@
 
 package org.bitcoinj.core;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Ordering;
-import com.google.common.io.BaseEncoding;
-import com.google.common.io.Resources;
-import com.google.common.primitives.Ints;
-import com.google.common.primitives.UnsignedLongs;
-import org.spongycastle.crypto.digests.RIPEMD160Digest;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,10 +26,26 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
+import com.google.common.io.BaseEncoding;
+import com.google.common.io.Resources;
+import com.google.common.primitives.Ints;
+import com.google.common.primitives.UnsignedLongs;
+import org.spongycastle.crypto.digests.RIPEMD160Digest;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;

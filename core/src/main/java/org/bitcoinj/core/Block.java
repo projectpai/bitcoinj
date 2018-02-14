@@ -17,19 +17,28 @@
 
 package org.bitcoinj.core;
 
-import com.google.common.annotations.*;
-import com.google.common.base.*;
-import com.google.common.collect.*;
-import org.bitcoinj.script.*;
-import org.slf4j.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import javax.annotation.Nullable;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import org.bitcoinj.script.Script;
+import org.bitcoinj.script.ScriptBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.annotation.*;
-import java.io.*;
-import java.math.*;
-import java.util.*;
-
-import static org.bitcoinj.core.Coin.*;
-import static org.bitcoinj.core.Sha256Hash.*;
+import static org.bitcoinj.core.Coin.THOUSAND_1_5_COINS;
+import static org.bitcoinj.core.Sha256Hash.hashTwice;
 
 /**
  * <p>A block is a group of transactions, and is one of the fundamental data structures of the Bitcoin system.
@@ -216,7 +225,7 @@ public class Block extends Message {
      * </p>
      */
     public Coin getBlockInflation(int height) {
-        return FIFTY_COINS.shiftRight(height / params.getSubsidyDecreaseBlockCount());
+        return THOUSAND_1_5_COINS.shiftRight(height / params.getSubsidyDecreaseBlockCount());
     }
 
     /**
@@ -900,7 +909,7 @@ public class Block extends Message {
      */
     @VisibleForTesting
     public Block createNextBlock(Address to, long version, long time, int blockHeight) {
-        return createNextBlock(to, version, null, time, pubkeyForTesting, FIFTY_COINS, blockHeight);
+        return createNextBlock(to, version, null, time, pubkeyForTesting, THOUSAND_1_5_COINS, blockHeight);
     }
 
     /**
@@ -920,7 +929,7 @@ public class Block extends Message {
         if (to != null) {
             // Add a transaction paying 50 coins to the "to" address.
             Transaction t = new Transaction(params);
-            t.addOutput(new TransactionOutput(params, t, FIFTY_COINS, to));
+            t.addOutput(new TransactionOutput(params, t, THOUSAND_1_5_COINS, to));
             // The input does not really need to be a valid signature, as long as it has the right general form.
             TransactionInput input;
             if (prevOut == null) {
@@ -958,7 +967,8 @@ public class Block extends Message {
 
     @VisibleForTesting
     public Block createNextBlock(@Nullable Address to, TransactionOutPoint prevOut) {
-        return createNextBlock(to, BLOCK_VERSION_GENESIS, prevOut, getTimeSeconds() + 5, pubkeyForTesting, FIFTY_COINS, BLOCK_HEIGHT_UNKNOWN);
+        return createNextBlock(to, BLOCK_VERSION_GENESIS, prevOut, getTimeSeconds() + 5, pubkeyForTesting,
+            THOUSAND_1_5_COINS, BLOCK_HEIGHT_UNKNOWN);
     }
 
     @VisibleForTesting
@@ -968,7 +978,7 @@ public class Block extends Message {
 
     @VisibleForTesting
     public Block createNextBlock(@Nullable Address to) {
-        return createNextBlock(to, FIFTY_COINS);
+        return createNextBlock(to, THOUSAND_1_5_COINS);
     }
 
     @VisibleForTesting
@@ -984,7 +994,7 @@ public class Block extends Message {
     @VisibleForTesting
     Block createNextBlockWithCoinbase(long version, byte[] pubKey, final int height) {
         return createNextBlock(null, version, (TransactionOutPoint) null,
-                               Utils.currentTimeSeconds(), pubKey, FIFTY_COINS, height);
+                               Utils.currentTimeSeconds(), pubKey, THOUSAND_1_5_COINS, height);
     }
 
     @VisibleForTesting
