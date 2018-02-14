@@ -26,8 +26,10 @@ public class GeneratorUtil {
     return new Address(params, params.getP2SHHeader(), hash160());
   }
 
-  public static Block block(NetworkParameters params) {
-return null;
+  public static Transaction transaction(NetworkParameters params) {
+    Transaction t = new Transaction(params);
+    t.addOutput(Coin.COIN, addressByHeader(params));
+    return t;
   }
 
   public static byte[] lastHash() {

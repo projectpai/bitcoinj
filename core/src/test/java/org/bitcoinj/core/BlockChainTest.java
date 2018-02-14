@@ -395,8 +395,9 @@ public class BlockChainTest {
 
     // Some blocks from the test net.
     private static Block getBlock2() throws Exception {
+        Transaction transaction = GeneratorUtil.transaction(testNet);
         Block b2 = new Block(testNet, Block.BLOCK_VERSION_GENESIS);
-        b2.setMerkleRoot(Sha256Hash.wrap("addc858a17e21e68350f968ccd384d6439b64aafa6c193c8b9dd66320470838b"));
+        b2.setMerkleRoot(Sha256Hash.wrap(transaction.getHash().getBytes()));
         b2.setNonce(2642058077L);
         b2.setTime(1296734343L);
         b2.setPrevBlockHash(Sha256Hash.wrap("000000033cc282bc1fa9dcae7a533263fd7fe66490f550d80076433340831604"));
@@ -406,12 +407,12 @@ public class BlockChainTest {
     }
 
     private static Block getBlock1() throws Exception {
+        Transaction transaction = GeneratorUtil.transaction(testNet);
         Block b1 = new Block(testNet, Block.BLOCK_VERSION_GENESIS);
-        b1.setMerkleRoot(Sha256Hash.wrap("0e8e58ecdacaa7b3c6304a35ae4ffff964816d2b80b62b58558866ce4e648c10"));
+        b1.setMerkleRoot(Sha256Hash.wrap(transaction.getHash().getBytes()));
         b1.setNonce(236038445);
         b1.setTime(1296734340);
-        b1.setPrevBlockHash(Sha256Hash.wrap("00000007199508e34a9ff81e6ec0c477a4cccff2a4767a8eee39c11db367b008"));
-        assertEquals("660cdb03e064755d18ec828488039e894540c66c79d425faba02bfef5111be55", b1.getHashAsString());
+        b1.setPrevBlockHash(Sha256Hash.wrap(testNet.getGenesisBlock().getHashAsString()));
         b1.verifyHeader();
         return b1;
     }
