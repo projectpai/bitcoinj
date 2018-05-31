@@ -62,6 +62,7 @@ public class TestNet3Params extends AbstractBitcoinNetParams {
                 "52.37.189.65",
                 "13.59.205.159",
                 "52.78.224.215",
+                "193.112.4.118"
         };
         addrSeeds = null;
         bip32HeaderPub = 0x03E3C526; // ptpu

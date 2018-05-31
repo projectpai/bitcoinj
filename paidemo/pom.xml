@@ -6,8 +6,8 @@
 
 	<parent>
 		<groupId>org.bitcoinj</groupId>
-		<artifactId>bitcoinj-parent</artifactId>
-		<version>0.15-SNAPSHOT</version>
+		<artifactId>paicoinj-parent</artifactId>
+		<version>0.14.7</version>
 	</parent>
 
 	<artifactId>paidemo</artifactId>
@@ -52,6 +52,11 @@
 	</build>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.bitcoinj</groupId>
+			<artifactId>paicoinj-core</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>com.googlecode.clichemaven</groupId>
 			<artifactId>cliche</artifactId>

@@ -70,6 +70,7 @@ public class MainNetParams extends AbstractBitcoinNetParams {
                 "34.215.125.66",
                 "13.58.110.183",
                 "13.124.177.237",
+                "193.112.7.193"
         };
         // Paicoin does not support HTTP seeds yet
         //httpSeeds = new HttpDiscovery.Details[] {
