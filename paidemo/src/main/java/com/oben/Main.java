@@ -16,9 +16,13 @@ import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionConfidence;
 import org.bitcoinj.kits.WalletAppKit;
+import org.bitcoinj.params.MainNetParams;
+import org.bitcoinj.params.RegTestParams;
 import org.bitcoinj.params.TestNet3Params;
 import org.bitcoinj.wallet.Wallet;
 import org.bitcoinj.wallet.Wallet.BalanceType;
+import org.bitcoinj.core.PeerGroup;
+import org.bitcoinj.core.TransactionBroadcast;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -34,7 +38,13 @@ public class Main {
 	public void rawTx(@Param(name = "address") String toAddress, @Param(name = "amount") String amount,
 			@Param(name = "privateKey") String privateKey) {
 
+		//Select your network, PAI mainnet, testnet or regtest
 		NetworkParameters params = TestNet3Params.get();
+		//NetworkParameters params = MainNetParams.get();
+		//NetworkParameters params = RegTestParams.get();
+		PeerGroup peerGroup = new PeerGroup(params);
+
+		//Private key should be provided in base58 format
 		DumpedPrivateKey dumpedPrivateKey = DumpedPrivateKey.fromBase58(params, privateKey);
 		ECKey key = dumpedPrivateKey.getKey();
 
@@ -43,22 +53,31 @@ public class Main {
 		Transaction tx = new Transaction(params);
 		tx.addOutput(Coin.parseCoin(amount), to);
 
+		//Set components of the transaction
 		tx.getConfidence().setSource(TransactionConfidence.Source.SELF);
 		tx.setPurpose(Transaction.Purpose.USER_PAYMENT);
 
 		Sha256Hash hash = Sha256Hash.wrap(tx.getHashAsString());
+		//Sign the transaction
 		ECDSASignature sig = key.sign(hash);
 		byte[] encodedBytes = sig.encodeToDER();
 		String signedTransaction = DatatypeConverter.printHexBinary(encodedBytes);
 
 		System.out.println("Raw transaction created: " + tx.getHashAsString());
 		System.out.println("Signed transaction: " + signedTransaction);
+		TransactionBroadcast broadcast = peerGroup.broadcastTransaction(tx);
+		System.out.println("Broadcasted hash: " + tx.getHashAsString());
 	}
 
 	@Command(description = "Send some amount of coins to provided address")
 	public void send(@Param(name = "address") String toAddress, @Param(name = "amount") String amount) {
 
+		//Select your network, PAI mainnet, testnet or regtest
 		NetworkParameters params = TestNet3Params.get();
+		//NetworkParameters params = MainNetParams.get();
+		//NetworkParameters params = RegTestParams.get();
+
+		//Construct a local wallet
 		WalletAppKit kit = new WalletAppKit(params, new File("."), "sendrequest-example");
 
 		kit.startAsync();
@@ -68,6 +87,7 @@ public class Main {
 		Address to = Address.fromBase58(params, toAddress);
 
 		try {
+			//Send coins using local wallet
 			Wallet.SendResult result = kit.wallet().sendCoins(kit.peerGroup(), to, value);
 
 			System.out.println("coins sent. transaction hash: " + result.tx.getHashAsString());
