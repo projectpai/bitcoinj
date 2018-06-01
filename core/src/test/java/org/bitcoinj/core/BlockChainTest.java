@@ -427,7 +427,7 @@ public class BlockChainTest {
         Date d = prod.estimateBlockTime(200000);
         assertEquals(
             new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US)
-                .parse("2021-06-26T04:20:00.000-0700"),
+                .parse("2021-06-26T04:26:16.000-0700"),
             d);
     }
 
