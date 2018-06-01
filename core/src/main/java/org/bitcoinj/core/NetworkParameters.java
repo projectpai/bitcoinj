@@ -108,15 +108,18 @@ public abstract class NetworkParameters {
     protected Map<Integer, Sha256Hash> checkpoints = new HashMap<Integer, Sha256Hash>();
     protected transient MessageSerializer defaultSerializer = null;
 
-    protected NetworkParameters() {
+    protected NetworkParameters(String signature) {
         alertSigningKey = SATOSHI_KEY;
-        genesisBlock = createGenesis(this);
+        genesisBlock = createGenesis(this, signature);
     }
 
-    private static Block createGenesis(NetworkParameters n) {
+    private static Block createGenesis(NetworkParameters n, String signature) {
         Block genesisBlock = new Block(n, Block.BLOCK_VERSION_GENESIS);
         Transaction t = new Transaction(n);
         try {
+            if (signature == null) {
+                signature = "9a8abac6c3d97d37d627e6ebcaf68be72275168b";
+            }
             // A script containing the difficulty bits and the following message:
             //
             //   "09/06/2017 - Create your own avatar twin that talks like you"
@@ -124,8 +127,7 @@ public abstract class NetworkParameters {
             t.addInput(new TransactionInput(n, t, bytes));
             ByteArrayOutputStream scriptPubKeyBytes = new ByteArrayOutputStream();
             scriptPubKeyBytes.write(ScriptOpCodes.OP_HASH160);
-            Script.writeBytes(scriptPubKeyBytes, Utils.HEX.decode
-                    ("9a8abac6c3d97d37d627e6ebcaf68be72275168b"));
+            Script.writeBytes(scriptPubKeyBytes, Utils.HEX.decode(signature));
             scriptPubKeyBytes.write(ScriptOpCodes.OP_EQUAL);
             t.addOutput(new TransactionOutput(n, t, GENESIS_COINS, scriptPubKeyBytes.toByteArray()));
         } catch (Exception e) {

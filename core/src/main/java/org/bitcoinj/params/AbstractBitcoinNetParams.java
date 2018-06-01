@@ -48,8 +48,8 @@ public abstract class AbstractBitcoinNetParams extends NetworkParameters {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractBitcoinNetParams.class);
 
-    public AbstractBitcoinNetParams() {
-        super();
+    public AbstractBitcoinNetParams(String signature) {
+        super(signature);
     }
 
     /**

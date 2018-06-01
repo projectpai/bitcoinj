@@ -30,7 +30,7 @@ public class UnitTestParams extends AbstractBitcoinNetParams {
     public static final int TESTNET_MAJORITY_ENFORCE_BLOCK_UPGRADE = 4;
 
     public UnitTestParams() {
-        super();
+        super("23103f0e2d2abbaad0d79b7a37759b1a382b7821");
         id = ID_UNITTESTNET;
         packetMagic = 0x0b091107;
         addressHeader = 51;

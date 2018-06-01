@@ -36,7 +36,7 @@ import static com.google.common.base.Preconditions.checkState;
  */
 public class TestNet3Params extends AbstractBitcoinNetParams {
     public TestNet3Params() {
-        super();
+        super("9a8abac6c3d97d37d627e6ebcaf68be72275168b");
         id = ID_TESTNET;
         // Genesis hash is 0000000003976df1a1393912d10ea68fae1175ee2c7e6011a0dc4e05f18f8403
         packetMagic = 0x0b091107;
