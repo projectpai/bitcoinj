@@ -163,7 +163,8 @@ public class CheckpointManager {
             for (int i = 0; i < numSigs; i++)
                 reader.readLine(); // Skip sigs for now.
             int numCheckpoints = Integer.parseInt(reader.readLine());
-            checkState(numCheckpoints > 0);
+            //checkState(numCheckpoints > 0); //Allow 0 checkpoints for now
+
             // Hash numCheckpoints in a way compatible to the binary format.
             hasher.putBytes(ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(numCheckpoints).array());
             final int size = StoredBlock.COMPACT_SERIALIZED_SIZE;
