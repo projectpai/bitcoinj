@@ -34,7 +34,7 @@ public class MainNetParams extends AbstractBitcoinNetParams {
         super();
         interval = INTERVAL;
         targetTimespan = TARGET_TIMESPAN;
-        maxTarget = Utils.decodeCompactBits(0x1d00ffffL);
+        maxTarget = Utils.decodeCompactBits(0x1c09fe61L);
         dumpedPrivateKeyHeader = 247;
         addressHeader = 56;
         p2shHeader = 130;
@@ -48,28 +48,30 @@ public class MainNetParams extends AbstractBitcoinNetParams {
         majorityRejectBlockOutdated = MAINNET_MAJORITY_REJECT_BLOCK_OUTDATED;
         majorityWindow = MAINNET_MAJORITY_WINDOW;
 
-        genesisBlock.setDifficultyTarget(0x1d00ffffL);
-        genesisBlock.setTime(1504706400L);
-        genesisBlock.setNonce(2876968165L);
+        genesisBlock.setDifficultyTarget(0x1c09fe61L);
+        genesisBlock.setTime(1504706776L);
+        genesisBlock.setNonce(460938808L);
         id = ID_MAINNET;
         subsidyDecreaseBlockCount = 210000;
         spendableCoinbaseDepth = 100;
         String genesisHash = genesisBlock.getHashAsString();
-        // TODO: Update the hash when the actual mainnet genesis block is known
-        checkState(genesisHash.equals("6872b37ce8174aa0f8b9f98e46d93d31f8bb1711401d9e7cdb458394b05d1d9f"),
+        checkState(genesisHash.equals("00000000018151b673df2356e5e25bfcfecbcd7cf888717f2458530461512343"),
                 genesisHash);
 
         // This contains (at a minimum) the blocks which are not BIP30 compliant. BIP30 changed how duplicate
         // transactions are handled. Duplicated transactions could occur in the case where a coinbase had the same
         // extraNonce and the same outputs but appeared at different heights, and greatly complicated re-org handling.
         // Having these here simplifies block connection logic considerably.
-        // TODO: Update the hash when the actual mainnet genesis block is known
-        checkpoints.put(0, Sha256Hash.wrap("6872b37ce8174aa0f8b9f98e46d93d31f8bb1711401d9e7cdb458394b05d1d9f"));
+        checkpoints.put(0, Sha256Hash.wrap("00000000018151b673df2356e5e25bfcfecbcd7cf888717f2458530461512343"));
 
         dnsSeeds = new String[] {
-                "34.215.125.66",
-                "13.58.110.183",
-                "13.124.177.237",
+            "34.215.125.66",
+            "13.58.110.183",
+            "13.124.177.237",
+            "193.112.7.193",
+            "206.189.7.207",
+            "118.24.235.29",
+            "106.15.94.91",
         };
         // Paicoin does not support HTTP seeds yet
         //httpSeeds = new HttpDiscovery.Details[] {
