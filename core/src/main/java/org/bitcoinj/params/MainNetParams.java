@@ -17,7 +17,6 @@
 
 package org.bitcoinj.params;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Utils;
 
