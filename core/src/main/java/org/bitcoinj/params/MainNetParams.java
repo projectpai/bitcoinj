@@ -17,6 +17,7 @@
 
 package org.bitcoinj.params;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Utils;
 
@@ -55,8 +56,9 @@ public class MainNetParams extends AbstractBitcoinNetParams {
         subsidyDecreaseBlockCount = 210000;
         spendableCoinbaseDepth = 100;
         String genesisHash = genesisBlock.getHashAsString();
-        System.err.println("Genesis hash as string = " + genesisHash);
-        System.err.println("expected = 00000000018151b673df2356e5e25bfcfecbcd7cf888717f2458530461512343");
+        System.out.println("Genesis hash as string = " + genesisHash);
+        System.out.println("expected = 00000000018151b673df2356e5e25bfcfecbcd7cf888717f2458530461512343");
+        new IllegalArgumentException("this is to test").printStackTrace();
         checkState(genesisHash.equals("00000000018151b673df2356e5e25bfcfecbcd7cf888717f2458530461512343"), genesisHash);
         
         // This contains (at a minimum) the blocks which are not BIP30 compliant. BIP30 changed how duplicate
