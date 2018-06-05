@@ -124,8 +124,13 @@ public abstract class NetworkParameters {
             t.addInput(new TransactionInput(n, t, bytes));
             ByteArrayOutputStream scriptPubKeyBytes = new ByteArrayOutputStream();
             scriptPubKeyBytes.write(ScriptOpCodes.OP_HASH160);
-            Script.writeBytes(scriptPubKeyBytes, Utils.HEX.decode
-                    ("9a8abac6c3d97d37d627e6ebcaf68be72275168b"));
+            if (n instanceof MainNetParams) {
+                Script.writeBytes(scriptPubKeyBytes, Utils.HEX.decode("95ba0161eb524f97d3847653057baaef7d7ba0ff"));
+            } else if (n instanceof TestNet3Params) {
+                Script.writeBytes(scriptPubKeyBytes, Utils.HEX.decode("9a8abac6c3d97d37d627e6ebcaf68be72275168b"));
+            } else {
+                Script.writeBytes(scriptPubKeyBytes, Utils.HEX.decode("23103f0e2d2abbaad0d79b7a37759b1a382b7821"));
+            }
             scriptPubKeyBytes.write(ScriptOpCodes.OP_EQUAL);
             t.addOutput(new TransactionOutput(n, t, GENESIS_COINS, scriptPubKeyBytes.toByteArray()));
         } catch (Exception e) {
