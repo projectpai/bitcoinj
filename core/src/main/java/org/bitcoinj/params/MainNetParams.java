@@ -55,9 +55,6 @@ public class MainNetParams extends AbstractBitcoinNetParams {
         subsidyDecreaseBlockCount = 210000;
         spendableCoinbaseDepth = 100;
         String genesisHash = genesisBlock.getHashAsString();
-        System.out.println("Genesis hash as string = " + genesisHash);
-        System.out.println("expected = 00000000018151b673df2356e5e25bfcfecbcd7cf888717f2458530461512343");
-        new IllegalArgumentException("this is to test").printStackTrace();
         checkState(genesisHash.equals("00000000018151b673df2356e5e25bfcfecbcd7cf888717f2458530461512343"), genesisHash);
         
         // This contains (at a minimum) the blocks which are not BIP30 compliant. BIP30 changed how duplicate
