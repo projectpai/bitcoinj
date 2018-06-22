@@ -1,15 +1,22 @@
 package com.oben;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.File;
+import java.util.Iterator;
 import javax.xml.bind.DatatypeConverter;
 
+import com.google.common.base.Throwables;
+import com.subgraph.orchid.encoders.Hex;
 import org.bitcoinj.core.*;
 import org.bitcoinj.core.ECKey.ECDSASignature;
 import org.bitcoinj.net.discovery.DnsDiscovery;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.params.RegTestParams;
 import org.bitcoinj.params.TestNet3Params;
+import org.bitcoinj.script.Script;
+import org.bitcoinj.script.ScriptBuilder;
+import org.bitcoinj.script.ScriptChunk;
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.MemoryBlockStore;
 import org.bitcoinj.store.SPVBlockStore;
@@ -111,9 +118,27 @@ public class PAIExample {
 		wallet.removeKey(this.privateKey);
 	}
 
+	public void getPubKeyScript(String addressString)
+	throws Exception {
+		Address address = Address.fromBase58(this.params, addressString);
+		Script outputScript = ScriptBuilder.createOutputScript(address);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		outputScript.getChunks().forEach(chunk -> {
+			try {
+				chunk.write(outputStream);
+			} catch(Exception e) {
+				throw Throwables.propagate(e);
+			}
+		});
+
+		System.out.println("Script: " + new String(Hex.encode(outputStream.toByteArray())));
+	}
+
 	public static void main(String[] args) throws Exception {
 		PAIExample example = new PAIExample();
+		//Substitute a key that is linked to an address that has funds or an HD key
 		example.init("aUFnBx22DoSao9NzqV8hB5UtRnFHdXTLP9r8wPuF6Utz2H8syqWr");
+		example.getPubKeyScript("Mutrsk37EpPbn2Qp2esJEKSsYag2eK7P3B");
 		example.walletAddresses();
 		example.rawTx("Mutrsk37EpPbn2Qp2esJEKSsYag2eK7P3B", ".01");
 		example.simpleTx("Mutrsk37EpPbn2Qp2esJEKSsYag2eK7P3B", ".015");
