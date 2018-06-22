@@ -12,6 +12,7 @@
     <module>examples</module>
     <module>tools</module>
     <module>wallettemplate</module>
+    <module>paidemo</module>
   </modules>
 
   <parent>
