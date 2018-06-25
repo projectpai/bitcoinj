@@ -1,4 +1,4 @@
-#### Project PAI - PAIcoin Demo Scripts
+# Project PAI - PAIcoin Demo Scripts
 
 This folder contains scripts to demonstrate the usage of the bitcoinj library with PAIcoin and to provide tools for PAIcoin usage.
 
@@ -37,7 +37,7 @@ In the *paicoin* branch
 
 We have also added a simple example of the requested interactions with PAI using bitcoinj in the paidemo directory of that branch.
 
-# Usage
+### Usage
 
 To run the script, execute:
 
@@ -62,7 +62,7 @@ All of these interactions are done via bitcoinj and the peer-to-peer protocol. I
 
 This is a script that verifies the validity of a PAIcoin public address.
 
-# Usage
+### Usage
 
 To run the script, execute:
 
