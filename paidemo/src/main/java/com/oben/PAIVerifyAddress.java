@@ -70,6 +70,7 @@ public class PAIVerifyAddress {
             System.out.println(GREEN + "The address is a valid." + RESET + " " + result.message);
         } else {
             System.out.println(RED + "The address is not valid." + RESET + " " + result.message);
+            System.exit(-1);
         }
     }
 }
