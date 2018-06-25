@@ -1,7 +1,6 @@
 package com.oben;
 
 import java.util.Scanner;
-import java.util.Scanner;
 
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.params.MainNetParams;
