@@ -112,6 +112,8 @@ public abstract class NetworkParameters {
         alertSigningKey = SATOSHI_KEY;
         genesisBlock = createGenesis(this);
     }
+    
+    protected BigInteger hybridConsensusVersion;
 
     private static Block createGenesis(NetworkParameters n) {
         Block genesisBlock = new Block(n, Block.BLOCK_VERSION_GENESIS);
@@ -127,6 +129,7 @@ public abstract class NetworkParameters {
             if (n instanceof MainNetParams) {
                 Script.writeBytes(scriptPubKeyBytes, Utils.HEX.decode("95ba0161eb524f97d3847653057baaef7d7ba0ff"));
             } else if (n instanceof TestNet3Params) {
+            	// TESTNET_GENESIS_BLOCK_SIGNATURE - chainparams.cpp
                 Script.writeBytes(scriptPubKeyBytes, Utils.HEX.decode("9a8abac6c3d97d37d627e6ebcaf68be72275168b"));
             } else {
                 Script.writeBytes(scriptPubKeyBytes, Utils.HEX.decode("23103f0e2d2abbaad0d79b7a37759b1a382b7821"));

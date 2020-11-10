@@ -66,6 +66,8 @@ public class Block extends Message {
 
     /** How many bytes are required to represent a block header WITHOUT the trailing 00 length byte. */
     public static final int HEADER_SIZE = 80;
+    
+    public static final int HEADER_HYBRID_CONSENSUS_SIZE = 140;
 
     static final long ALLOWED_TIME_DRIFT = 2 * 60 * 60; // Same value as Bitcoin Core.
 
@@ -105,6 +107,18 @@ public class Block extends Message {
     private long time;
     private long difficultyTarget; // "nBits"
     private long nonce;
+    
+    // Hybrid Consensus Block 
+    private long stakeDifficulty;
+    private long voteBits;
+    private long ticketPoolSize;
+    private long ticketLotteryState;
+    private long voters;
+    private long freshStake;
+    private long revocations;
+    private Sha256Hash extraData;
+    private long stakeVersion;    
+        
 
     // TODO: Get rid of all the direct accesses to this field. It's a long-since unnecessary holdover from the Dalvik days.
     /** If null, it means this object holds only the headers. */
@@ -125,12 +139,25 @@ public class Block extends Message {
     Block(NetworkParameters params, long setVersion) {
         super(params);
         // Set up a few basic things. We are not complete after this though.
-        version = setVersion;
+        version = setVersion;        
         difficultyTarget = 0x1d07fff8L;
         time = System.currentTimeMillis() / 1000;
         prevBlockHash = Sha256Hash.ZERO_HASH;
 
-        length = HEADER_SIZE;
+        length = getBlockHeaderSize();
+        
+        if(isHybridBlock()) {
+	        // Hybrid consensus block
+	        stakeDifficulty = 0;
+	        voteBits = 0;
+	        ticketPoolSize = 0;
+	        ticketLotteryState = 0;
+	        voters = 0;
+	        freshStake = 0;
+	        revocations = 0;
+	        extraData = Sha256Hash.ZERO_HASH;
+	        stakeVersion = 0;
+        }
     }
 
     /**
@@ -202,16 +229,32 @@ public class Block extends Message {
      * @param transactions List of transactions including the coinbase.
      */
     public Block(NetworkParameters params, long version, Sha256Hash prevBlockHash, Sha256Hash merkleRoot, long time,
-                 long difficultyTarget, long nonce, List<Transaction> transactions) {
+                 long difficultyTarget, long nonce, List<Transaction> transactions, 
+                 long stakeDifficulty, long voteBits, long ticketPoolSize, 
+                 long ticketLotteryState, long freshStake, long stakeVersion,
+                 long voters, long revocations,Sha256Hash extraData) {
         super(params);
         this.version = version;
         this.prevBlockHash = prevBlockHash;
         this.merkleRoot = merkleRoot;
         this.time = time;
-        this.difficultyTarget = difficultyTarget;
+        this.difficultyTarget = difficultyTarget;        
         this.nonce = nonce;
         this.transactions = new LinkedList<Transaction>();
         this.transactions.addAll(transactions);
+        
+        if(isHybridBlock()) {
+	        // Hybrid consensus block            
+	        this.stakeDifficulty = stakeDifficulty;
+	        this.voteBits = voteBits;
+	        this.ticketPoolSize = ticketPoolSize;
+	        this.ticketLotteryState = ticketLotteryState;
+	        this.voters = voters;
+	        this.freshStake = freshStake;
+	        this.revocations = revocations;	        
+	        this.extraData = extraData;
+	        this.stakeVersion = stakeVersion;
+        }
     }
 
 
@@ -237,7 +280,7 @@ public class Block extends Message {
      */
     protected void parseTransactions(final int transactionsOffset) throws ProtocolException {
         cursor = transactionsOffset;
-        optimalEncodingMessageSize = HEADER_SIZE;
+        optimalEncodingMessageSize = getBlockHeaderSize();
         if (payload.length == cursor) {
             // This message is just a header, it has no transactions.
             transactionBytesValid = false;
@@ -266,13 +309,28 @@ public class Block extends Message {
         prevBlockHash = readHash();
         merkleRoot = readHash();
         time = readUint32();
-        difficultyTarget = readUint32();
+        difficultyTarget = readUint32();       
         nonce = readUint32();
+        if(isHybridBlock()) {
+	        // Hybrid consensus block        	
+	        stakeDifficulty = readInt64();
+	        voteBits = readUint16();
+	        ticketPoolSize = readUint32();
+	        ticketLotteryState = readUint32();
+	        voters = readUint16();
+	        freshStake = readUint16();
+	        revocations = readUint16();
+	        extraData = readHash();
+	        stakeVersion = readUint32();
+        }
+                
         hash = Sha256Hash.wrapReversed(Sha256Hash.hashTwice(payload, offset, cursor - offset));
+                
         headerBytesValid = serializer.isParseRetainMode();
 
         // transactions
-        parseTransactions(offset + HEADER_SIZE);
+        parseTransactions(offset + getBlockHeaderSize());
+
         length = cursor - offset;
     }
     
@@ -286,8 +344,8 @@ public class Block extends Message {
     // default for testing
     void writeHeader(OutputStream stream) throws IOException {
         // try for cached write first
-        if (headerBytesValid && payload != null && payload.length >= offset + HEADER_SIZE) {
-            stream.write(payload, offset, HEADER_SIZE);
+        if (headerBytesValid && payload != null && payload.length >= offset + getBlockHeaderSize()) {
+            stream.write(payload, offset, getBlockHeaderSize());
             return;
         }
         // fall back to manual write
@@ -295,8 +353,21 @@ public class Block extends Message {
         stream.write(prevBlockHash.getReversedBytes());
         stream.write(getMerkleRoot().getReversedBytes());
         Utils.uint32ToByteStreamLE(time, stream);
-        Utils.uint32ToByteStreamLE(difficultyTarget, stream);
+        Utils.uint32ToByteStreamLE(difficultyTarget, stream); //nBits
         Utils.uint32ToByteStreamLE(nonce, stream);
+        
+        if(isHybridBlock()) {
+	        // Hybrid consensus block
+	        Utils.uint32ToByteStreamLE(stakeDifficulty, stream);
+	        Utils.uint32ToByteStreamLE(voteBits, stream);
+	        Utils.uint32ToByteStreamLE(ticketPoolSize, stream);
+	        Utils.uint32ToByteStreamLE(ticketLotteryState, stream);
+	        Utils.uint32ToByteStreamLE(voters, stream);
+	        Utils.uint32ToByteStreamLE(freshStake, stream);
+	        Utils.uint32ToByteStreamLE(revocations, stream);
+	        stream.write(extraData.getReversedBytes());
+	        Utils.uint32ToByteStreamLE(stakeVersion, stream);
+        }
     }
 
     private void writeTransactions(OutputStream stream) throws IOException {
@@ -308,7 +379,7 @@ public class Block extends Message {
 
         // confirmed we must have transactions either cached or as objects.
         if (transactionBytesValid && payload != null && payload.length >= offset + length) {
-            stream.write(payload, offset + HEADER_SIZE, length - HEADER_SIZE);
+            stream.write(payload, offset + getBlockHeaderSize(), length - getBlockHeaderSize());
             return;
         }
 
@@ -343,7 +414,7 @@ public class Block extends Message {
 
         // At least one of the two cacheable components is invalid
         // so fall back to stream write since we can't be sure of the length.
-        ByteArrayOutputStream stream = new UnsafeByteArrayOutputStream(length == UNKNOWN_LENGTH ? HEADER_SIZE + guessTransactionsLength() : length);
+        ByteArrayOutputStream stream = new UnsafeByteArrayOutputStream(length == UNKNOWN_LENGTH ? getBlockHeaderSize() + guessTransactionsLength() : length);
         try {
             writeHeader(stream);
             writeTransactions(stream);
@@ -370,7 +441,7 @@ public class Block extends Message {
      */
     private int guessTransactionsLength() {
         if (transactionBytesValid)
-            return payload.length - HEADER_SIZE;
+            return payload.length - getBlockHeaderSize();
         if (transactions == null)
             return 0;
         int len = VarInt.sizeOf(transactions.size());
@@ -413,7 +484,8 @@ public class Block extends Message {
      */
     private Sha256Hash calculateHash() {
         try {
-            ByteArrayOutputStream bos = new UnsafeByteArrayOutputStream(HEADER_SIZE);
+        	ByteArrayOutputStream bos = new UnsafeByteArrayOutputStream(getBlockHeaderSize());
+            
             writeHeader(bos);
             return Sha256Hash.wrapReversed(Sha256Hash.hashTwice(bos.toByteArray()));
         } catch (IOException e) {
@@ -468,7 +540,7 @@ public class Block extends Message {
     }
 
     /** Copy the block without transactions into the provided empty block. */
-    protected final void copyBitcoinHeaderTo(final Block block) {
+    protected final void copyBitcoinHeaderTo(final Block block) {    	
         block.nonce = nonce;
         block.prevBlockHash = prevBlockHash;
         block.merkleRoot = getMerkleRoot();
@@ -476,6 +548,20 @@ public class Block extends Message {
         block.time = time;
         block.difficultyTarget = difficultyTarget;
         block.transactions = null;
+        
+        if(isHybridBlock()) {
+        	// Hybrid Block        	
+	        block.stakeDifficulty = stakeDifficulty;
+	        block.voteBits = voteBits;
+	        block.ticketPoolSize = ticketPoolSize;
+	        block.ticketLotteryState = ticketLotteryState;
+	        block.voters = voters;
+	        block.freshStake = freshStake;
+	        block.revocations = revocations;
+	        block.extraData = extraData;
+	        block.stakeVersion = stakeVersion;
+        }
+        
         block.hash = getHash();
     }
 
@@ -488,7 +574,7 @@ public class Block extends Message {
         StringBuilder s = new StringBuilder();
         s.append(" block: \n");
         s.append("   hash: ").append(getHashAsString()).append('\n');
-        s.append("   version: ").append(version);
+        s.append("   version: ").append(version).append('\n');        
         String bips = Joiner.on(", ").skipNulls().join(isBIP34() ? "BIP34" : null, isBIP66() ? "BIP66" : null,
                 isBIP65() ? "BIP65" : null);
         if (!bips.isEmpty())
@@ -554,6 +640,15 @@ public class Block extends Message {
         BigInteger target = getDifficultyTargetAsInteger();
 
         BigInteger h = getHash().toBigInteger();
+                
+        if(BigInteger.valueOf(getVersion()).compareTo(params.hybridConsensusVersion) > 0) {
+        	// TODO: 
+        	// What validations should be here?
+        	// Could validate TestHybridConsensusTestFramework from hybrid_consensus_test_framework.py
+        	// For now we return true        	
+        	return true;
+        }
+        
         if (h.compareTo(target) > 0) {
             // Proof of work check failed!
             if (throwException)
@@ -1040,4 +1135,54 @@ public class Block extends Message {
     public boolean isBIP65() {
         return version >= BLOCK_VERSION_BIP65;
     }
+    
+    // Hybrid consensus block
+    public long getStakeDifficulty() {
+		return stakeDifficulty;
+	}
+
+	public long getVoteBits() {
+		return voteBits;
+	}
+
+	public long getTicketPoolSize() {
+		return ticketPoolSize;
+	}
+
+	public long getTicketLotteryState() {
+		return ticketLotteryState;
+	}
+
+	public long getFreshStake() {
+		return freshStake;
+	}
+
+	public long getStakeVersion() {
+		return stakeVersion;
+	}
+
+	public long getVoters() {
+		return voters;
+	}
+
+	public long getRevocations() {
+		return revocations;
+	}
+
+	public Sha256Hash getExtraData() {
+		return extraData;
+	}
+	
+	private boolean isHybridBlock() {
+		return (params.hybridConsensusVersion != null) && BigInteger.valueOf(getVersion()).compareTo(params.hybridConsensusVersion) > 0;
+	}
+	
+	private int getBlockHeaderSize(){
+		int headerSize = HEADER_SIZE;
+		if(isHybridBlock()) {
+			headerSize = HEADER_HYBRID_CONSENSUS_SIZE;
+    	}
+		
+		return headerSize;
+	}
 }
