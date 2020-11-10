@@ -20,6 +20,7 @@ package org.bitcoinj.core;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -129,4 +130,12 @@ public abstract class ListMessage extends Message {
     public int hashCode() {
         return items.hashCode();
     }
+
+	@Override
+	public String toString() {
+		return "ListMessage [arrayLen=" + arrayLen + ", items=" + items + ", offset=" + offset + ", cursor=" + cursor
+				+ ", length=" + length + ", payload=" + Arrays.toString(payload) + ", recached=" + recached
+				+ ", serializer=" + serializer + ", protocolVersion=" + protocolVersion + ", params=" + params + "]";
+	}
+    
 }

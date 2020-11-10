@@ -37,24 +37,32 @@ import static com.google.common.base.Preconditions.checkState;
 public class TestNet3Params extends AbstractBitcoinNetParams {
     public TestNet3Params() {
         super();
+        
+        // TODO: to validate, from block.h HARDFORK_VERSION_BIT parameter
+        hybridConsensusVersion = BigInteger.valueOf(2147483648L);
+        
         id = ID_TESTNET;
         // Genesis hash is 0000000003976df1a1393912d10ea68fae1175ee2c7e6011a0dc4e05f18f8403
         packetMagic = 0x0b091107;
         interval = INTERVAL;
         targetTimespan = TARGET_TIMESPAN;
-        maxTarget = Utils.decodeCompactBits(0x1c09fe61L);
+        
+        // TODO: to validate, obtained from chainparams.cpp, from TESTNET_GENESIS_BLOCK_NBITS field
+        maxTarget = Utils.decodeCompactBits(0x1e00ffff);
+                
         port = 18567;
         addressHeader = 51;
         p2shHeader = 180;
         acceptableAddressCodes = new int[] { addressHeader, p2shHeader };
         dumpedPrivateKeyHeader = 226;
         genesisBlock.setTime(1504706516L);
-        genesisBlock.setDifficultyTarget(0x1c09fe61L);
+        genesisBlock.setDifficultyTarget(0x1c09fe61L);        					  	
         genesisBlock.setNonce(2253953817L);
         spendableCoinbaseDepth = 100;
         subsidyDecreaseBlockCount = 210000;
         String genesisHash = genesisBlock.getHashAsString();
         checkState(genesisHash.equals("0000000003976df1a1393912d10ea68fae1175ee2c7e6011a0dc4e05f18f8403"));
+        
         // Paicoin no need for a different alert key for the moment
         //alertSigningKey = Utils.HEX.decode("04302390343f91cc401d56d68b123028bf52e5fca1939df127f63c6467cdf9c8e2c14b61104cf817d0b780da337893ecc4aaff1309e536162dabbdb45200ca2b0a");
 
@@ -69,7 +77,7 @@ public class TestNet3Params extends AbstractBitcoinNetParams {
 
         majorityEnforceBlockUpgrade = 51;
         majorityRejectBlockOutdated = 75;
-        majorityWindow = 100;
+        majorityWindow = 100;        
     }
 
     private static TestNet3Params instance;

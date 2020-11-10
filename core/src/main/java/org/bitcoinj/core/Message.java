@@ -286,7 +286,17 @@ public abstract class Message {
             checkState(false, "Length field has not been set in %s.", getClass().getSimpleName());
         return length;
     }
-
+    
+    protected long readUint16() throws ProtocolException {
+        try {
+            long u = Utils.readUint16BE(payload, cursor);
+            cursor += 2;
+            return u;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new ProtocolException(e);
+        }
+    }
+    
     protected long readUint32() throws ProtocolException {
         try {
             long u = Utils.readUint32(payload, cursor);
@@ -331,7 +341,7 @@ public abstract class Message {
             throw new ProtocolException("Claimed value length too large: " + length);
         }
         try {
-            byte[] b = new byte[length];
+            byte[] b = new byte[length];            
             System.arraycopy(payload, cursor, b, 0, length);
             cursor += length;
             return b;
